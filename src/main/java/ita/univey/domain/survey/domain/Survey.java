@@ -21,5 +21,5 @@ public class Survey extends BaseEntity {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    // 여기다 쭉쭉 컬럼들 작성해야함,,,
+    // 여기다 쭉쭉 컬럼들 작성해야함,,,qq
 }
