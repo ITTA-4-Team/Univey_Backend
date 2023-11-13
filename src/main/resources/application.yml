@@ -1,0 +1,47 @@
+# 서버 포트 설정
+server:
+  port: 9000
+  servlet:
+    encoding:
+      force: true
+      charset: UTF-8
+
+# database 연동 설정
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${MYSQL_USER}
+    password: ${MYSQL_ROOT_PASSWORD}
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          kakao:
+#            authorization-uri: https://kauth.kakao.com/oauth/authorize
+#            token-uri: https://kauth.kakao.com/oauth/token
+#            user-info-uri: https://kapi.kakao.com/v2/user/me
+#            user-name-attribute: id
+#        registration:
+#          kakao:
+#            client-id: ad84ad8a4b339a01703a6fe593708a23
+#            client-secret: QmVuTGK6aUSL2pNgAPGZQZSR3s7us8DX
+#            client-authentication-method: client_secret_post
+#            redirect-uri: http://localhost:9000/login/oauth2/code/kakao
+#            authorization-grant-type: authorization_code
+#            client-name: kakao
+#            scope:
+#              - profile
+#              - account_email
+
+
+
+  # spring data jpa 설정
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
