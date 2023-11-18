@@ -2,6 +2,7 @@ package ita.univey.domain.gpt;
 
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import ita.univey.domain.gpt.application.ChatService;
+import ita.univey.domain.gpt.dto.ChatGptRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,11 @@ public class TestController {
     public String test(@RequestBody String question) {
         // 조합된 질문 생성
         String combinedQuestion = "설문조사를 하려고하는데,/n" + question + "에 관한 흥미로운 설문조사 주제와 답변항목(5개) 임의로 만들어줘./n" + "json 형태로 만들어줘";
+        String getResponse = chatService.getChatResponse(combinedQuestion);
 
-        return chatService.getChatResponse(combinedQuestion);
+        // GPT 응답을 파싱하여 dto로 변환
+//        ChatGptRes chatGptRes = parseGptResponseToSurveyQuestion(String gptResponse);
+
+        return getResponse;
     }
 }
