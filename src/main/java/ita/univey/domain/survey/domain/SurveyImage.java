@@ -26,7 +26,7 @@ public class SurveyImage extends BaseEntity {
     private String link;
 
     @Builder
-    public SurveyImage(Survey product, String link) {
+    public SurveyImage(Survey survey, String link) {
         this.survey = survey;
         this.link = link;
     }
