@@ -15,7 +15,6 @@ public class SurveyImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "survey_image_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
