@@ -10,7 +10,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Survey")
+@Table(name = "Participation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Where(clause = "status = 'ACTIVE'")

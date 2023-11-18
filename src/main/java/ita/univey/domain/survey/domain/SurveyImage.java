@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "survey_image")
+@Table(name = "Survey_Image")
 public class SurveyImage extends BaseEntity {
 
     @Id
