@@ -34,5 +34,9 @@ out/
 /.nb-gradle/
 
 ### VS Code ###
+<<<<<<< HEAD
 .vscode/
 application.yml
+=======
+.vscode/
+>>>>>>> 6dcddda836de3debc9f7afdadcfd4853f66ce304
