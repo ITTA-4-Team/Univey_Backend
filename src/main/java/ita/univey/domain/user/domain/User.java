@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
 
-    @Column(name = "password", nullable = false, unique = true, updatable = false) // seucrtiy 설정을 위한 컬럼 추가
+    @Column(name = "password", nullable = false, updatable = false) // seucrtiy 설정을 위한 컬럼 추가
     private String password;
 
     @Column(name = "name")
