@@ -39,14 +39,21 @@ public class UserService {
         Set<UserRole> roles = new HashSet<>();
         roles.add(UserRole.ROLE_USER);
 
-        // provider Id 는 카카오에서 받아온다. 테스트할 때는 uuid로 임의로 부여한다.
-        String testProviderId = UUID.randomUUID().toString();
+        String providerId = null;
+        // provider Id 는 카카오에서 받아온다. 테스트할 or 로컬 로그인을 개발한 경우 uuid로 임의로 부여한다.
+        // uuid는 10자리에서 자른다.
+        if (userJoinDto.getProviderId() == null) {
+            providerId = UUID.randomUUID().toString().substring(0, 10);
+            ;
+        } else {
+            providerId = userJoinDto.getProviderId();
+        }
         User user = User.builder()
                 .name(userJoinDto.getName())
                 .email(userJoinDto.getEmail())
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .roleSet(roles)
-                .providerId(testProviderId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
+                .providerId(providerId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
         return UserJoinDto.from(UserRepository.save(user));
     }

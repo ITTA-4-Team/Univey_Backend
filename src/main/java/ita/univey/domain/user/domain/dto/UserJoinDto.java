@@ -13,10 +13,15 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserJoinDto {
+
     @NotEmpty
     private String name;
+    @NotEmpty
     private String email;
+    @NotEmpty
     private String password;
+
+    private String providerId;
 
     public static UserJoinDto from(User user) {
         if (user == null) return null;
@@ -25,6 +30,7 @@ public class UserJoinDto {
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .providerId(user.getProviderId())
                 .build();
     }
 }

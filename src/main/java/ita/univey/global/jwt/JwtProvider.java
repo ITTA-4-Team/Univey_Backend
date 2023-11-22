@@ -52,8 +52,8 @@ public class JwtProvider implements InitializingBean {
         //sub(유저별 구분되는 정보) => email, claim => (auth,유저의 authorities)
         return Jwts.builder()
                 .setIssuedAt(new Date())
-                .setSubject(authorities)
-                .claim("email", authentication.getName())
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -92,7 +92,7 @@ public class JwtProvider implements InitializingBean {
                 .getBody();
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.getSubject().split(","))
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
         log.info("sub = {}", claims.getSubject());
