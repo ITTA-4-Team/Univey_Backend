@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -35,21 +34,23 @@ public class User extends BaseEntity {
     @Column(name = "provider_id", nullable = false, unique = true, updatable = false)
     private String providerId;
 
-    // seucrtiy 권한 부여를 위해 Authority 엔티티 생성 후 joinTable 사용하여 매핑
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "Authority_id", referencedColumnName = "Authority_id")})
-    private Set<Authority> authorities = new HashSet<>();
+    /*
+ @ElementCollection : 컬렉션의 각 요소를 저장할 수 있다. 부모 Entity와 독립적으로 사용 X
+ @CollectionTable : @ElementCollection과 함께 사용될 때, 생성될 테이블의 이름 지정
+ */
+    @ElementCollection(targetClass = UserRole.class)
+    @CollectionTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "userr_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<UserRole> roleSet;
 
     @Builder
-    public User(String email, String password, String name, String providerId, Set<Authority> authorities) {
+    public User(String email, String password, String name, String providerId, Set<UserRole> roleSet) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.providerId = providerId;
-        this.authorities = authorities;
+        this.roleSet = roleSet;
     }
 
 }

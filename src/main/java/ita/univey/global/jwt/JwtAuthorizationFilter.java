@@ -3,7 +3,6 @@ package ita.univey.global.jwt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-@Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final String AUTHORIZE_HEADER = "Authorization";
@@ -38,6 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // 1차 체크(정보가 변조되지 않았는지 체크)
             if (jwtProvider.verify(token)) {
                 Authentication authentication = jwtProvider.getAuthentication(token);
+                log.info("로그인하고 권한 가져오기 =>{}", authentication.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
             } else {

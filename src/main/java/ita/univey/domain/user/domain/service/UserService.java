@@ -1,11 +1,10 @@
 package ita.univey.domain.user.domain.service;
 
 import io.jsonwebtoken.Claims;
-import ita.univey.domain.user.domain.Authority;
 import ita.univey.domain.user.domain.User;
+import ita.univey.domain.user.domain.UserRole;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
-import ita.univey.domain.user.domain.repository.AuthorityRepository;
 import ita.univey.domain.user.domain.repository.UserRepository;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -25,7 +25,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository UserRepository;
-    private final AuthorityRepository authorityRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -37,13 +36,8 @@ public class UserService {
         }
         // 가입되어 있지 않은 회원이면,
         // 권한 정보 만들고
-        Authority authority = authorityRepository.findByAuthorityName("ROLE_USER").orElse(null);
-        if (authority == null) {
-            Authority roleUser = Authority.builder()
-                    .authorityName("ROLE_USER")
-                    .build();
-            authority = authorityRepository.save(roleUser);
-        }
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(UserRole.ROLE_USER);
 
         // provider Id 는 카카오에서 받아온다. 테스트할 때는 uuid로 임의로 부여한다.
         String testProviderId = UUID.randomUUID().toString();
@@ -51,7 +45,7 @@ public class UserService {
                 .name(userJoinDto.getName())
                 .email(userJoinDto.getEmail())
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
-                .authorities(Collections.singleton(authority))
+                .roleSet(roles)
                 .providerId(testProviderId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
         return UserJoinDto.from(UserRepository.save(user));

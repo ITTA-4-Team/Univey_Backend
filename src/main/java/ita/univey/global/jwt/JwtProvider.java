@@ -52,8 +52,8 @@ public class JwtProvider implements InitializingBean {
         //sub(유저별 구분되는 정보) => email, claim => (auth,유저의 authorities)
         return Jwts.builder()
                 .setIssuedAt(new Date())
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(authorities)
+                .claim("email", authentication.getName())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
