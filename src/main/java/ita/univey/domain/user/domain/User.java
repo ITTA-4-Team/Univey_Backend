@@ -40,7 +40,7 @@ public class User extends BaseEntity {
  */
     @ElementCollection(targetClass = UserRole.class)
     @CollectionTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "userr_id"))
+            joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roleSet;
 
