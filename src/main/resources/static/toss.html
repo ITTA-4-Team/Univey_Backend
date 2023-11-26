@@ -45,12 +45,12 @@
     // https://docs.tosspayments.com/reference/widget-sdk#requestpayment결제-정보
     button.addEventListener('click', function () {
         paymentWidget.requestPayment({
-            orderId: 'sdfdasxxxxx3ae2aa22axw101', // 주문 ID(직접 만들어주세요)
-            orderName: '토스 티셔츠 외 2건', // 주문명
-            successUrl: 'http://localhost:8080/api/v1/payments/toss/success', // 결제에 성공하면 이동하는 페이지(간단하게 직접 만들었다)
-            failUrl: 'http://localhost:8080/api/v1/payments/toss/fail', // 결제에 실패하면 이동하는 페이지(어차피 에러니까 안 만들었다)
+            orderId: 'sdfdasxxxxx3ae2aa22axw303', // 주문 ID(직접 만들어주세요)
+            orderName: '유니베이 포인트 충전', // 주문명
+            successUrl: 'http://localhost:9000/api/v1/payments/toss/success', // 결제에 성공하면 이동하는 페이지(간단하게 직접 만들었다)
+            failUrl: 'http://localhost:9000/api/v1/payments/toss/fail', // 결제에 실패하면 이동하는 페이지(어차피 에러니까 안 만들었다)
             customerEmail: 'customer123@gmail.com',
-            customerName: '김토스',
+            customerName: '불사조',
         });
     });
 </script>

@@ -7,7 +7,7 @@ import ita.univey.domain.payment.domain.dto.PaymentSuccessDto;
 import ita.univey.domain.payment.domain.entity.Payment;
 import ita.univey.domain.payment.domain.repository.JpaPaymentRepository;
 import ita.univey.domain.user.domain.User;
-import ita.univey.domain.user.domain.UserService;
+import ita.univey.domain.user.domain.service.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -46,21 +46,23 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getAmount() < 1000) {
             throw new CustomLogicException(ExceptionCode.INVALID_PAYMENT_AMOUNT);
         }
-        payment.setCustomer(member);
+        payment.setCustomer(user);
         return paymentRepository.save(payment);
     }
 
+    //결제 성공 로직 검증
     @Transactional
     public PaymentSuccessDto tossPaymentSuccess(String paymentKey, String orderId, Long amount) {
-        Payment payment = verifyPayment(orderId, amount);
+        Payment payment = verifyPayment(orderId, amount); // 요청 가격 = 결제된 금액
         PaymentSuccessDto result = requestPaymentAccept(paymentKey, orderId, amount);
         payment.setPaymentKey(paymentKey); //추후 결제 취소, 결제 조회
-        payment.setPaySuccessYN(true);
-        payment.getCustomer().setPoint(payment.getCustomer().getPoint() + amount);
-        memberService.updateMemberCache(payment.getCustomer());
+        payment.setPaySuccessYN(true); //성공 여부
+        payment.getCustomer().setPoint(payment.getCustomer().getPoint() + amount); //포인트 업데이트
+        userService.updateUserCache(payment.getCustomer());
         return result;
     }
 
+    //토스페이먼트에 최종 결제 승인 요청을 보내기 위해 필요한 정보들을 담아 post로 보내는 부분
     @Transactional
     public PaymentSuccessDto requestPaymentAccept(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
@@ -72,8 +74,10 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentSuccessDto result = null;
         try {
             result = restTemplate.postForObject(TossPaymentConfig.URL + paymentKey,
+                    //요청 URL은 Config에 작성한 "http://api.tosspayments.com/v1/payments/" + paymentKey
                     new HttpEntity<>(params, headers),
                     PaymentSuccessDto.class);
+            //restTemplate.postForObject() -> post 요청을 보내고 객체로 결과를 반환 받는다
         } catch (Exception e) {
             throw new CustomLogicException(ExceptionCode.ALREADY_APPROVED);
         }
@@ -82,6 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
+    //결제 요청된 금액과 실제 결제된 금액 같은지 검증하는 부분
     public Payment verifyPayment(String orderId, Long amount) {
         Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
             throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_FOUND);
@@ -92,21 +97,23 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
+    // 실패 응답을 처리하는 로직
     @Transactional
     public void tossPaymentFail(String code, String message, String orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
             throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_FOUND);
         });
-        payment.setPaySuccessYN(false);
-        payment.setFailReason(message);
+        payment.setPaySuccessYN(false); // 결제 성공 여부를 false로 변경
+        payment.setFailReason(message); // 에러 메세지를 set함
     }
 
+    // Controller에서 전달받은 값들을 이용하여 검증 로직들을 처리하는 메소드
     @Transactional
     public Map cancelPaymentPoint(String userEmail, String paymentKey, String cancelReason) {
-        Payment payment = paymentRepository.findByPaymentKeyAndUserEmail(paymentKey, userEmail).orElseThrow(() -> {
+        Payment payment = paymentRepository.findByPaymentKeyAndCustomer_Email(paymentKey, userEmail).orElseThrow(() -> {
             throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_FOUND);
         });
-        // 취소 할려는데 포인트가 그만큼 없으면 환불 못함
+        // 취소 하려는데 포인트가 그만큼 없으면 환불 못함
         if (payment.getCustomer().getPoint() >= payment.getAmount()) {
             payment.setCancelYN(true);
             payment.setCancelReason(cancelReason);
@@ -117,6 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
         throw new CustomLogicException(ExceptionCode.PAYMENT_NOT_ENOUGH_POINT);
     }
 
+    // 토스페이먼츠에 최종 취소 승인 요청을 보내기 위해 필요한 정보들을 담아 post로 보내는 부분
     public Map tossPaymentCancel(String paymentKey, String cancelReason) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
@@ -124,23 +132,25 @@ public class PaymentServiceImpl implements PaymentService {
         params.put("cancelReason", cancelReason);
 
         return restTemplate.postForObject(TossPaymentConfig.URL + paymentKey + "/cancel",
+                //요청 URL -> "https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel"
                 new HttpEntity<>(params, headers),
                 Map.class);
     }
 
+    // 고객 정보를 가져와 해당 고객이 맞는지 검증 후에 paymentRepository에서 해당 고객의 결제 내역을 모두 가져와 반환하는 부분
     @Override
     public Slice<Payment> findAllChargingHistories(String username, Pageable pageable) {
         userService.verifyUser(username);
-        return paymentRepository.findAllByUserEmail(username,
+        return paymentRepository.findAllByCustomer_Email(username,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                        Sort.Direction.DESC, "paymentId")
+                        Sort.Direction.DESC, "paymentId") // paymentId를 기준으로 내림차순 정렬하여 반환
         );
     }
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         String encodedAuthKey = new String(
-                Base64.getEncoder().encode((tossPaymentConfig.getTestSecretKey() + ":").getBytes(StandardCharsets.UTF_8)));
+                Base64.getEncoder().encode((tossPaymentConfig.getTestSecretApiKey() + ":").getBytes(StandardCharsets.UTF_8)));
         headers.setBasicAuth(encodedAuthKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));

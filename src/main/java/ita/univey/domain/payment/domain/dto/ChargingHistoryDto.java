@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChargingHistoryDto {
+public class ChargingHistoryDto { // 결제 내역을 반환하기 위한 응답 데이터
 
     private Long paymentHistoryId;
 

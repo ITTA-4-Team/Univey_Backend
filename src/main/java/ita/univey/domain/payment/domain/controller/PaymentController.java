@@ -7,7 +7,6 @@ import ita.univey.domain.payment.domain.config.TossPaymentConfig;
 import ita.univey.domain.payment.domain.dto.PaymentDto;
 import ita.univey.domain.payment.domain.dto.PaymentFailDto;
 import ita.univey.domain.payment.domain.dto.PaymentResDto;
-import ita.univey.domain.payment.domain.dto.PaymentResponse;
 import ita.univey.domain.payment.domain.entity.Payment;
 import ita.univey.domain.payment.domain.mapper.PaymentMapper;
 import ita.univey.domain.payment.domain.service.PaymentServiceImpl;
@@ -74,7 +73,7 @@ public class PaymentController {
         ));
     }
 
-    //결제 조회
+    //결제 취소 요청 controller
     @PostMapping("/toss/cancel/point")
     public ResponseEntity tossPaymentCancelPoint(
             @AuthenticationPrincipal User principal,
@@ -86,7 +85,8 @@ public class PaymentController {
                         .cancelPaymentPoint(principal.getName(), paymentKey, cancelReason)));
     }
 
-    // 결제 내역 조회
+    /* 결제 내역 조회 요청받을 controller
+    해당 고객 정보를 가져와 Service 로직을 타고 Repository에서 알맞은 정보들을 찾아와 반환*/
     @GetMapping("/history")
     public ResponseEntity getChargingHistory(@AuthenticationPrincipal User authUser,
                                              Pageable pageable) {

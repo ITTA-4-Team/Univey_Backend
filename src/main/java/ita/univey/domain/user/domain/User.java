@@ -1,19 +1,20 @@
 package ita.univey.domain.user.domain;
 
 import ita.univey.domain.common.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import ita.univey.domain.user.domain.dto.UserJoinDto;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "User")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Where(clause = "status = 'ACTIVE'")
 public class User extends BaseEntity {
 
@@ -44,13 +45,27 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roleSet;
 
+    @Column(nullable = false) // 포인트
+    @ColumnDefault("0")
+    private Long point;
+
     @Builder
-    public User(String email, String password, String name, String providerId, Set<UserRole> roleSet) {
+    public User(String email, String password, String name, String providerId, Set<UserRole> roleSet, Long point) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.providerId = providerId;
         this.roleSet = roleSet;
+        this.point = point;
     }
 
+    public  UserJoinDto.Response toResponseDto(){
+        return UserJoinDto.Response.builder()
+                //.roleSet(roleSet.stream().map(role -> role.get.name()).collect(Collectors.toList()))
+                .email(email)
+                .name(name)
+                //.genders(genders)
+                .point(point)
+                .build();
+    }
 }

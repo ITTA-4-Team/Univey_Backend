@@ -24,5 +24,5 @@ public interface PaymentMapper {
                             .isPaySuccessYN(chargingHistory.isPaySuccessYN())
                             .build();
                 }).collect(Collectors.toList());
-    }
+    } // List 형태의 결제 내역을 stream을 사용하여 dto(응답 객체)의 각 요소들에 해당 값을 넣어줌
 }

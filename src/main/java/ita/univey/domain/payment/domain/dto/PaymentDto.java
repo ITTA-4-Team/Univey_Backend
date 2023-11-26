@@ -7,7 +7,7 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-//처음 프론트에서 입력받음
+//아래 값들을 처음에 프론트에서 받음
 @Setter
 @Getter
 @Builder
