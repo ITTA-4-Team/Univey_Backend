@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -31,6 +32,10 @@ public class User extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "point")
+    @ColumnDefault("0")
+    private Integer point;
+
     @Column(name = "provider_id", nullable = false, unique = true, updatable = false)
     private String providerId;
 
@@ -45,10 +50,11 @@ public class User extends BaseEntity {
     private Set<UserRole> roleSet;
 
     @Builder
-    public User(String email, String password, String name, String providerId, Set<UserRole> roleSet) {
+    public User(String email, String password, String name, Integer point, String providerId, Set<UserRole> roleSet) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.point = (point != null) ? point : 0; //null일 경우 0으로 저장.
         this.providerId = providerId;
         this.roleSet = roleSet;
     }
