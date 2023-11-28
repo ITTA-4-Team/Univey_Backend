@@ -22,7 +22,7 @@ public class TestController {
     @PostMapping("")
     public String test(@RequestBody String question) {
         // 조합된 질문 생성
-        String combinedQuestion = "설문조사를 하려고하는데,/n" + question + "에 관한 흥미로운 설문조사 주제와 답변항목(5개) 임의로 만들어줘./n" + "json 형태로 만들어줘";
+        String combinedQuestion = "설문조사를 하려고하는데,/n" + question + "에 관한 흥미로울만한 설문조사 주제를 임의로 만들고 답변항목(5개) 임의로 만들어줘./n" + "json 형태로 만들어줘.  임의로 만들어줘";
 
         return chatService.getChatResponse(combinedQuestion);
     }
