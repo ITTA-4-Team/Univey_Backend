@@ -20,6 +20,11 @@ public class SurveyService {
     private final CategoryRepository categoryRepository;
     private final SurveyRepository surveyRepository;
 
+    public Survey findSurvey(Long surveyId) {
+        Survey survey = surveyRepository.findSurveyById(surveyId).orElseThrow(() -> new RuntimeException("찾을 수 없는 설문!"));
+        return survey;
+    }
+
     public Long createSurvey(SurveyCreateDto surveyCreateDto) {
         String stringGender = surveyCreateDto.getGender();
         Gender gender;
