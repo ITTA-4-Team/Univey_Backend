@@ -6,7 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Gender {
-    Female("여성"),
+    ALL("전체"),
+    FEMALE("여성"),
     MALE("남성");
 
     private String value;

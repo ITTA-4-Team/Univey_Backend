@@ -23,14 +23,19 @@ public class SurveyService {
     public Long createSurvey(SurveyCreateDto surveyCreateDto) {
         String stringGender = surveyCreateDto.getGender();
         Gender gender;
-        if (stringGender.equals("여성")) {
-            gender = Gender.Female;
-        } else {
+        if (stringGender.equals("female")) {
+            gender = Gender.FEMALE;
+        } else if (stringGender.equals("male")) {
             gender = Gender.MALE;
+        } else {
+            gender = Gender.ALL;
         }
 
         String stringDeadline = surveyCreateDto.getDeadline();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        // 입력된 날짜 형식 지정
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+
+        // LocalDate로 parse
         LocalDate deadline = LocalDate.parse(stringDeadline, formatter);
         String stringCategory = surveyCreateDto.getCategory();
         Category category = categoryRepository.findCategoryByCategory(stringCategory)

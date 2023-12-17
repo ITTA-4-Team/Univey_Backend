@@ -22,7 +22,6 @@ public class SurveyCreateDto {
     @NotEmpty
     private String category;
 
-    
     private int age;
 
     @NotEmpty
@@ -34,7 +33,5 @@ public class SurveyCreateDto {
     @Column(name = "target_respondents")
     private Integer targetRespondents;
 
-    @Column(name = "trend")
-    private String trend;
 
 }
