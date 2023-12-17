@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Survey_Question")
@@ -20,7 +21,7 @@ public class SurveyQuestion extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
-
+    
     @Column(name = "question")
     private String question;
 
@@ -28,10 +29,15 @@ public class SurveyQuestion extends BaseEntity {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<SurveyQuestionAnswer> surveyQuestionAnswers;
 
     @Builder
-    public SurveyQuestion(String question, Survey survey) {
+    public SurveyQuestion(String question, Survey survey, List<SurveyQuestionAnswer> surveyQuestionAnswers) {
         this.question = question;
         this.survey = survey;
+        this.surveyQuestionAnswers = surveyQuestionAnswers;
     }
+
+
 }

@@ -11,6 +11,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "Survey")
@@ -50,9 +51,12 @@ public class Survey extends BaseEntity {
     @JoinColumn(name = "cateogry")
     private Category category;
 
+    @OneToMany(mappedBy = "survey", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<SurveyQuestion> surveyQuestions;
+
     @Builder
     public Survey(String topic, String description, Integer age, Gender gender,
-                  LocalDate deadline, Integer targetRespondents, String trend, Category category) {
+                  LocalDate deadline, Integer targetRespondents, String trend, Category category, List<SurveyQuestion> surveyQuestions) {
         this.topic = topic;
         this.description = description;
         this.age = age;
@@ -61,5 +65,6 @@ public class Survey extends BaseEntity {
         this.targetRespondents = targetRespondents;
         this.trend = trend;
         this.category = category;
+        this.surveyQuestions = surveyQuestions;
     }
 }
