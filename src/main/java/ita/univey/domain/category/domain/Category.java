@@ -1,20 +1,21 @@
 package ita.univey.domain.category.domain;
 
+import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.Survey;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 @Where(clause = "status = 'ACTIVE'")
-public class Category {
+@AllArgsConstructor
+public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +25,7 @@ public class Category {
     @Column(name = "category")
     private String category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_id")
-    private Survey survey;
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY) // 일대다 양방향 관계로 수정
+    private List<Survey> surveyList;
 
 }

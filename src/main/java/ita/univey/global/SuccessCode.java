@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @Getter
 @AllArgsConstructor
-public class SuccessCode {
+public enum SuccessCode {
     // api 만들고 수정하기
 //    CUSTOM_SUCCESS(OK, "~ 조회에 성공했습니다."),
-//    CUSTOM_CREATED_SUCCESS(CREATED, "~ 생성에 성공했습니다.");
+    SURVEY_CREATED_SUCCESS(CREATED, "~ 생성에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
