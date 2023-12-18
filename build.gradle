@@ -23,14 +23,6 @@ repositories {
 
 dependencies {
 
-<<<<<<< HEAD
-
-
-	implementation 'org.json:json:20210307'
-
-	// gpt
-	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
-=======
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -52,7 +44,6 @@ dependencies {
 
 
 
->>>>>>> develop
 }
 
 tasks.named('bootBuildImage') {
