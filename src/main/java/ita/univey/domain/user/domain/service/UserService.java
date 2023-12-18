@@ -29,7 +29,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public UserJoinDto join(UserJoinDto userJoinDto) {
+    public Long join(UserJoinDto userJoinDto) {
 
         if (UserRepository.findUserByEmail(userJoinDto.getEmail()).orElse(null) != null) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
@@ -55,7 +55,8 @@ public class UserService {
                 .roleSet(roles)
                 .providerId(providerId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
-        return UserJoinDto.from(UserRepository.save(user));
+        User saveUser = UserRepository.save(user);
+        return saveUser.getId();
     }
 
     public String login(UserLoginDto userLoginDto) {

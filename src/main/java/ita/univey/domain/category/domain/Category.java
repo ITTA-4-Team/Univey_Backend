@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-@Builder
 @Where(clause = "status = 'ACTIVE'")
 @AllArgsConstructor
 
