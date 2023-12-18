@@ -1,5 +1,6 @@
 package ita.univey.domain.gpt.dto;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +40,17 @@ public class ChatGptRes {
     }
 
 
+=======
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
+
+@Data
+@NoArgsConstructor
+public class ChatGptRes {
+    private Long question_num;
+    private String question;
+    private Map<String, String> answers;
+>>>>>>> develop
 }
