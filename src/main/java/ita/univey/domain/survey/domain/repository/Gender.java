@@ -10,4 +10,5 @@ public enum Gender {
     MALE("남성");
 
     private String value;
+
 }

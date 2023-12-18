@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "Survey")
@@ -39,7 +38,7 @@ public class Survey extends BaseEntity {
     private Gender gender;
 
     @Column(name = "deadline")
-    private String deadline;
+    private LocalDate deadline;
 
     @Column(name = "target_respondents")
     private Integer targetRespondents;
@@ -47,9 +46,13 @@ public class Survey extends BaseEntity {
     @Column(name = "trend")
     private String trend;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cateogry")
+    private Category category;
 
     @Builder
-    public Survey(String topic, String description, Integer age, Gender gender, String deadline, Integer targetRespondents, String trend) {
+    public Survey(String topic, String description, Integer age, Gender gender,
+                  LocalDate deadline, Integer targetRespondents, String trend, Category category) {
         this.topic = topic;
         this.description = description;
         this.age = age;
@@ -57,5 +60,6 @@ public class Survey extends BaseEntity {
         this.deadline = deadline;
         this.targetRespondents = targetRespondents;
         this.trend = trend;
+        this.category = category;
     }
 }
