@@ -1,10 +1,7 @@
 package ita.univey.domain.category.domain;
 
 import ita.univey.domain.survey.domain.Survey;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -13,7 +10,9 @@ import javax.persistence.*;
 @Table(name = "Category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
 @Where(clause = "status = 'ACTIVE'")
+@AllArgsConstructor
 public class Category {
 
     @Id
