@@ -52,6 +52,7 @@ public class Survey extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "survey", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OrderColumn(name = "question_order")
     private List<SurveyQuestion> surveyQuestions;
 
     @Builder

@@ -33,5 +33,4 @@ public class SurveyCreateDto {
     @Column(name = "target_respondents")
     private Integer targetRespondents;
 
-
 }

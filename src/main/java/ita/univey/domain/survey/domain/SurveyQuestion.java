@@ -1,6 +1,7 @@
 package ita.univey.domain.survey.domain;
 
 import ita.univey.domain.common.BaseEntity;
+import ita.univey.domain.survey.domain.repository.QuestionType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,12 @@ public class SurveyQuestion extends BaseEntity {
     @Column(name = "id", updatable = false)
     private Long id;
     
+    @Column(name = "is_required")
+    private boolean isRequried;
+
+    @Column(name = "question_type")
+    private QuestionType questionType;
+
     @Column(name = "question")
     private String question;
 
@@ -30,10 +37,14 @@ public class SurveyQuestion extends BaseEntity {
     private Survey survey;
 
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OrderColumn(name = "choice_order")
     private List<SurveyQuestionAnswer> surveyQuestionAnswers;
 
     @Builder
-    public SurveyQuestion(String question, Survey survey, List<SurveyQuestionAnswer> surveyQuestionAnswers) {
+    public SurveyQuestion(boolean isRequried, QuestionType questionType, String question,
+                          Survey survey, List<SurveyQuestionAnswer> surveyQuestionAnswers) {
+        this.isRequried = isRequried;
+        this.questionType = questionType;
         this.question = question;
         this.survey = survey;
         this.surveyQuestionAnswers = surveyQuestionAnswers;
