@@ -11,14 +11,12 @@ import java.util.List;
 @Entity
 @Table(name = "Category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @Getter
 @Builder
 @Where(clause = "status = 'ACTIVE'")
 @AllArgsConstructor
 
 public class Category extends BaseEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
