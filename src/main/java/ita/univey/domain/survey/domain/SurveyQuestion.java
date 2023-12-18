@@ -45,10 +45,10 @@ public class SurveyQuestion extends BaseEntity {
     private List<SurveyQuestionAnswer> surveyQuestionAnswers;
 
     @Builder
-    public SurveyQuestion(boolean isRequried, int questionNum, QuestionType questionType, String question,
+    public SurveyQuestion(int questionNum, boolean isRequried, QuestionType questionType, String question,
                           Survey survey, List<SurveyQuestionAnswer> surveyQuestionAnswers) {
-        this.isRequried = isRequried;
         this.questionNum = questionNum;
+        this.isRequried = isRequried;
         this.questionType = questionType;
         this.question = question;
         this.survey = survey;
