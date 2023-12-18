@@ -33,5 +33,9 @@ public class Participation extends BaseEntity {
     @JoinColumn(name = "survey_question")
     private SurveyQuestion surveyQuestion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_question_answer")
+    private SurveyQuestionAnswer surveyQuestionAnswer;
+
 
 }

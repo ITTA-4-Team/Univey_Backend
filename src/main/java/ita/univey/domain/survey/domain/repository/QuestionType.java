@@ -5,11 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Gender {
-    ALL("전체"),
-    FEMALE("여성"),
-    MALE("남성");
-
+public enum QuestionType {
+    MULTIPLE_CHOICE("multipleChoice"),
+    SHORT_ANSWER("shortAnswer");
     private String value;
-
 }
