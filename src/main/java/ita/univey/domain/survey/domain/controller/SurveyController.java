@@ -73,6 +73,7 @@ public class SurveyController {
             log.info("question Type =>{}", userQuestion.getQuestionType());
             SurveyQuestion newSurveyQuestion = SurveyQuestion.builder()
                     .survey(survey)
+                    .questionNum(userQuestion.getQuestionNum())
                     .question(userQuestion.getQuestion())
                     .questionType(questionType)
                     .surveyQuestionAnswers(new ArrayList<>())

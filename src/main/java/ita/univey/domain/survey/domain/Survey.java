@@ -52,7 +52,7 @@ public class Survey extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "survey", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @OrderColumn(name = "question_order")
+//    @OrderColumn(name = "question_order") front에서 questionNum으로 순서 구분해서 생략.
     private List<SurveyQuestion> surveyQuestions;
 
     @Builder

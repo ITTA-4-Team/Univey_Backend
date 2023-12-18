@@ -22,11 +22,15 @@ public class SurveyQuestion extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
-    
+
+    @Column(name = "question_num")
+    private int questionNum;
+
     @Column(name = "is_required")
     private boolean isRequried;
 
     @Column(name = "question_type")
+    @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
     @Column(name = "question")
@@ -41,9 +45,10 @@ public class SurveyQuestion extends BaseEntity {
     private List<SurveyQuestionAnswer> surveyQuestionAnswers;
 
     @Builder
-    public SurveyQuestion(boolean isRequried, QuestionType questionType, String question,
+    public SurveyQuestion(boolean isRequried, int questionNum, QuestionType questionType, String question,
                           Survey survey, List<SurveyQuestionAnswer> surveyQuestionAnswers) {
         this.isRequried = isRequried;
+        this.questionNum = questionNum;
         this.questionType = questionType;
         this.question = question;
         this.survey = survey;
