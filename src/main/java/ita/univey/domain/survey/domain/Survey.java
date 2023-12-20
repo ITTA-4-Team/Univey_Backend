@@ -48,16 +48,19 @@ public class Survey extends BaseEntity {
     private String trend;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cateogry")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "survey", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 //    @OrderColumn(name = "question_order") front에서 questionNum으로 순서 구분해서 생략.
     private List<SurveyQuestion> surveyQuestions;
 
+    @Column(name ="point")
+    private int point;
+
     @Builder
     public Survey(String topic, String description, Integer age, Gender gender,
-                  LocalDate deadline, Integer targetRespondents, String trend, Category category, List<SurveyQuestion> surveyQuestions) {
+                  LocalDate deadline, Integer targetRespondents, String trend, Category category, int point/*, List<SurveyQuestion> surveyQuestions*/) {
         this.topic = topic;
         this.description = description;
         this.age = age;
@@ -66,6 +69,7 @@ public class Survey extends BaseEntity {
         this.targetRespondents = targetRespondents;
         this.trend = trend;
         this.category = category;
-        this.surveyQuestions = surveyQuestions;
+        this.point = point;
+        //this.surveyQuestions = surveyQuestions;
     }
 }

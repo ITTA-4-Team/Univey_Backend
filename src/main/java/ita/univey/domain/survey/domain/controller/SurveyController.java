@@ -3,11 +3,10 @@ package ita.univey.domain.survey.domain.controller;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.SurveyQuestion;
 import ita.univey.domain.survey.domain.SurveyQuestionAnswer;
-import ita.univey.domain.survey.domain.dto.SurveyCreateDto;
-import ita.univey.domain.survey.domain.dto.SurveyDetailsResponse;
-import ita.univey.domain.survey.domain.dto.SurveyQuestionsCreateDto;
+import ita.univey.domain.survey.domain.dto.*;
 import ita.univey.domain.survey.domain.repository.QuestionType;
 import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
+import ita.univey.domain.survey.domain.service.ParticipationService;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
@@ -16,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import java.util.Map;
 public class SurveyController {
     private final SurveyService surveyService;
     private final SurveyQuestionRepository surveyQuestionRepository;
+    private final ParticipationService participationService;
 
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<Long>> createSurvey(@Valid @RequestBody SurveyCreateDto surveyCreateDto) {
@@ -97,5 +99,32 @@ public class SurveyController {
         BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, survey.getId());
 
         return ResponseEntity.ok(successResponse);
+    }
+
+    //설문 상세 및 응답 참여
+    @Transactional
+    @GetMapping(value = "/participation/{surveyId}")
+    public BaseResponse<Map<String, Object>> getSurveyDetail(/*@AuthenticationPrincipal User authUser, */@PathVariable(value = "surveyId") Long surveyId) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("surveyData", surveyService.getSurveyDetail(surveyId));
+        BaseResponse<Map<String, Object>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, map);
+
+        return new BaseResponse<>(response.getStatus(), response.getMessage(), map);
+    }
+
+    //답변 등록
+    @Transactional
+    @PostMapping("/answerSubmit/{surveyId}")
+    public BaseResponse<String> participateSurvey(
+            /*@AuthenticationPrincipal User authUser, */@RequestBody ParticipationReqDto participationReqDto, @PathVariable("surveyId") Long surveyId) {
+        //*Long userId = authUser.getId();
+        Long userId = participationReqDto.getUserId();
+        List<ParticipationAnswerDto> answerDtoList = participationReqDto.getAnswers();
+        participationService.participateSurvey(userId, surveyId, answerDtoList);
+
+        BaseResponse<String> response = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS);
+
+        return new BaseResponse<>(response.getStatus(), response.getMessage());
     }
 }

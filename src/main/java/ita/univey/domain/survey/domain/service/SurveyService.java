@@ -3,15 +3,20 @@ package ita.univey.domain.survey.domain.service;
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.category.domain.repository.CategoryRepository;
 import ita.univey.domain.survey.domain.Survey;
+import ita.univey.domain.survey.domain.dto.QuestionDto;
 import ita.univey.domain.survey.domain.dto.SurveyCreateDto;
+import ita.univey.domain.survey.domain.dto.SurveyDto;
 import ita.univey.domain.survey.domain.repository.Gender;
 import ita.univey.domain.survey.domain.repository.SurveyRepository;
+import ita.univey.global.CustomLogicException;
+import ita.univey.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -19,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 public class SurveyService {
     private final CategoryRepository categoryRepository;
     private final SurveyRepository surveyRepository;
-
+    private final SurveyQuestionService surveyQuestionService;
     public Survey findSurvey(Long surveyId) {
         Survey survey = surveyRepository.findSurveyById(surveyId).orElseThrow(() -> new RuntimeException("찾을 수 없는 설문!"));
         return survey;
@@ -59,4 +64,18 @@ public class SurveyService {
         Survey saveSurvey = surveyRepository.save(newSurvey);
         return saveSurvey.getId();
     }
+
+    public SurveyDto getSurveyDetail(Long surveyId) {
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+        List<QuestionDto> questionDtoList = surveyQuestionService.getSurveyQuestion(surveyId);
+
+        SurveyDto dto = SurveyDto.builder()
+                .topic(survey.getTopic())
+                .description(survey.getDescription())
+                .userQuestions(questionDtoList)
+                .build();
+
+        return dto;
+    }
+
 }

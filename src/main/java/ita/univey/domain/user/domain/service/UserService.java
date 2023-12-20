@@ -1,13 +1,12 @@
 package ita.univey.domain.user.domain.service;
 
 import io.jsonwebtoken.Claims;
-import ita.univey.domain.global.exception.CustomLogicException;
-import ita.univey.domain.global.exception.ExceptionCode;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.UserRole;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
 import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.global.CustomLogicException;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,19 +79,6 @@ public class UserService {
 
         return jwt;
 
-    }
-
-    public User verifyUser(String email) {
-        return UserRepository.findUserByEmail(email).orElseThrow(() -> new CustomLogicException(ExceptionCode.MEMBER_NONE));
-    }
-
-    public User findUser(String email) {
-        return verifyUser(email);
-    }
-
-    @CachePut(value = "userDto", key = "#user.email")
-    public UserJoinDto.Response updateUserCache(User user) {
-        return user.toResponseDto();
     }
 
 }

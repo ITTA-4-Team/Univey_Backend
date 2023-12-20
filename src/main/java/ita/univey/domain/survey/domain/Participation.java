@@ -3,6 +3,7 @@ package ita.univey.domain.survey.domain;
 import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.user.domain.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
@@ -22,7 +23,7 @@ public class Participation extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "users")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,9 +34,14 @@ public class Participation extends BaseEntity {
     @JoinColumn(name = "survey_question")
     private SurveyQuestion surveyQuestion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_question_answer")
-    private SurveyQuestionAnswer surveyQuestionAnswer;
+    @Column(name = "content")
+    private String content;
 
-
+    @Builder
+    public Participation(User user, Survey survey, SurveyQuestion surveyQuestion, String content) {
+        this.user = user;
+        this.survey = survey;
+        this.surveyQuestion = surveyQuestion;
+        this.content = content;
+    }
 }
