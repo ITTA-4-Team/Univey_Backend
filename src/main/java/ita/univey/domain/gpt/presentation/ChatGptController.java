@@ -1,17 +1,16 @@
 package ita.univey.domain.gpt.presentation;
 
+import io.github.flashvayne.chatgpt.service.ChatgptService;
 import ita.univey.domain.gpt.application.ChatGptService;
 import ita.univey.domain.gpt.dto.ChatGptRes;
 import ita.univey.domain.gpt.dto.QuestionReq;
 import ita.univey.global.BaseResponse;
+import ita.univey.global.ErrorCode;
 import ita.univey.global.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
