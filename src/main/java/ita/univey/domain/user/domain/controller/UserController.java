@@ -71,7 +71,6 @@ public class UserController {
 
         User loginUser = userRepository.findUserById(userId).orElseThrow(() -> new RuntimeException("로그인 오류! 없는 회원"));
         String jwt = userService.login(kakaoMemberLogin);
-        log.info("jwt => {}", jwt);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(accessHeader, "Bearer " + jwt);
