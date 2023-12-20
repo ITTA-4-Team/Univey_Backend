@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -39,9 +38,8 @@ public class SurveyController {
         return ResponseEntity.ok(successResponse);
     }
 
-    @GetMapping("/create/details")
-    public ResponseEntity<BaseResponse<SurveyDetailsResponse>> surveyDetails(@RequestBody Map<String, Long> data) {
-        Long surveyId = data.get("surveyId");
+    @GetMapping("/create/details/{surveyId}")
+    public ResponseEntity<BaseResponse<SurveyDetailsResponse>> surveyDetails(@PathVariable Long surveyId) {
         Survey survey = surveyService.findSurvey(surveyId);
 
         SurveyDetailsResponse detailsResponse = SurveyDetailsResponse.builder()
@@ -55,9 +53,9 @@ public class SurveyController {
 
     }
 
-    @PostMapping("/create/details")
-    public ResponseEntity<BaseResponse<Long>> createQuestions(@Valid @RequestBody SurveyQuestionsCreateDto questionsCreateDto) {
-        Survey survey = surveyService.findSurvey(questionsCreateDto.getSurveyId());
+    @PostMapping("/create/details/{surveyId}")
+    public ResponseEntity<BaseResponse<Long>> createQuestions(@Valid @RequestBody SurveyQuestionsCreateDto questionsCreateDto, @PathVariable Long surveyId) {
+        Survey survey = surveyService.findSurvey(surveyId);
         List<SurveyQuestionsCreateDto.UserQuestions> userQuestions = questionsCreateDto.getUserQuestions();
 
         log.info("questionCreatDto => {}", questionsCreateDto);

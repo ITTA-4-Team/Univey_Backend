@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -16,8 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class SurveyQuestionsCreateDto {
 
-    @NotNull
-    private Long surveyId;
     @NotEmpty
     private List<UserQuestions> userQuestions;
 
