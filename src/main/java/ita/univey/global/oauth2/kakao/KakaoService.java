@@ -25,6 +25,8 @@ public class KakaoService {
 
     @Value(value = "${spring.security.oauth2.client.registration.kakao.clientId}")
     private String clientId;
+    @Value(value = "${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUri;
 
     public KakaoProfile kakaoRequest(String code) {
         RestTemplate rt = new RestTemplate();
@@ -37,7 +39,7 @@ public class KakaoService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
-        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        params.add("redirect_uri", redirectUri);
         params.add("code", code);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기

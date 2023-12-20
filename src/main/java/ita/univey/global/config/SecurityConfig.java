@@ -77,7 +77,6 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/sign-in"),
                                         new AntPathRequestMatcher("/sign-up"),
                                         new AntPathRequestMatcher("/users/kakao/callback"),
-                                        new AntPathRequestMatcher("/surveys/create"),
                                         new AntPathRequestMatcher("/ngrok-test")).permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/admintest")).hasRole("ADMIN")
