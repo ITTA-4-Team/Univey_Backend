@@ -55,8 +55,10 @@ public class UserService {
                 .roleSet(roles)
                 .providerId(providerId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
+
         User saveUser = UserRepository.save(user);
         return saveUser.getId();
+
     }
 
     public String login(UserLoginDto userLoginDto) {
