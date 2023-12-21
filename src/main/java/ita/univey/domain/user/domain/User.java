@@ -36,7 +36,6 @@ public class User extends BaseEntity {
     private String name;
 
     @Column(name = "point")
-    @ColumnDefault("0")
     private Integer point;
 
     @Column(name = "provider_id", nullable = false, unique = true, updatable = false)

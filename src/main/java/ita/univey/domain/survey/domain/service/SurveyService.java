@@ -6,6 +6,7 @@ import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.dto.SurveyCreateDto;
 import ita.univey.domain.survey.domain.repository.Gender;
 import ita.univey.domain.survey.domain.repository.SurveyRepository;
+import ita.univey.domain.survey.domain.repository.SurveyStatus;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.repository.UserRepository;
 import ita.univey.global.jwt.JwtProvider;
@@ -52,6 +53,7 @@ public class SurveyService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         Survey newSurvey = Survey.builder()
                 .user(surveyCreateUser)
+                .surveyState(SurveyStatus.IN_PROGRESS)
                 .topic(surveyCreateDto.getTopic())
                 .description(surveyCreateDto.getDescription())
                 .age(surveyCreateDto.getAge())
