@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -66,5 +67,12 @@ public class SurveyService {
 
         Survey saveSurvey = surveyRepository.save(newSurvey);
         return saveSurvey.getId();
+    }
+
+    @Transactional
+    public void updatePointById(Long id, int countQuestions) {
+        Survey findSurvey = surveyRepository.findSurveyById(id).orElseThrow(() -> new RuntimeException("survey point 업데이트 중 없는 survey 조회"));
+        int point = countQuestions * 10; // 문제 1개당 10P, 비율 바뀔 시 이 숫자만 수정하도록.
+        findSurvey.updateSurveyPoint(point);
     }
 }

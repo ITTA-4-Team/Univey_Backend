@@ -100,4 +100,17 @@ public class SurveyController {
 
         return ResponseEntity.ok(successResponse);
     }
+
+    @PostMapping("/create/submit/{surveyId}")
+    public ResponseEntity<BaseResponse<Long>> createQuestions(@PathVariable Long surveyId) {
+
+        int countQuestions = (int) surveyQuestionRepository.countBySurveyId(surveyId);
+
+        surveyService.updatePointById(surveyId, countQuestions);
+
+        // 성공 응답을 생성 , gpt 추천 질문 생성해서 보내야 함.
+        BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS);
+
+        return ResponseEntity.ok(successResponse);
+    }
 }

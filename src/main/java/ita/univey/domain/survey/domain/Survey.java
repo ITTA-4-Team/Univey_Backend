@@ -67,6 +67,9 @@ public class Survey extends BaseEntity {
 //    @OrderColumn(name = "question_order") front에서 questionNum으로 순서 구분해서 생략.
     private List<SurveyQuestion> surveyQuestions;
 
+    @Column(name="point")
+    private int point;
+
     @Builder
     public Survey(User user, String topic, String description, Integer age, Gender gender,
                   LocalDate deadline, Integer targetRespondents, Integer currentRespondents,
@@ -82,5 +85,9 @@ public class Survey extends BaseEntity {
         this.surveyState = surveyState;
         this.category = category;
         this.surveyQuestions = surveyQuestions;
+    }
+
+    public void updateSurveyPoint(int point) {
+        this.point = point;
     }
 }
