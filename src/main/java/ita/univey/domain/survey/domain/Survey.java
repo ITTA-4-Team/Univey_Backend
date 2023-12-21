@@ -3,10 +3,13 @@ package ita.univey.domain.survey.domain;
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.repository.Gender;
+import ita.univey.domain.survey.domain.repository.SurveyStatus;
+import ita.univey.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -24,6 +27,11 @@ public class Survey extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
+
+    //설문 생성한 유저
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user")
+    private User user;
 
     @Column(name = "topic")
     private String topic;
@@ -44,8 +52,12 @@ public class Survey extends BaseEntity {
     @Column(name = "target_respondents")
     private Integer targetRespondents;
 
-    @Column(name = "trend")
-    private String trend;
+    @Column(name = "current_respondents")
+    private Integer currentRespondents;
+
+    @Column(name = "survey_state")
+    @Enumerated(EnumType.STRING)
+    private SurveyStatus surveyState;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cateogry")
@@ -55,17 +67,27 @@ public class Survey extends BaseEntity {
 //    @OrderColumn(name = "question_order") front에서 questionNum으로 순서 구분해서 생략.
     private List<SurveyQuestion> surveyQuestions;
 
+    @Column(name="point")
+    private int point;
+
     @Builder
-    public Survey(String topic, String description, Integer age, Gender gender,
-                  LocalDate deadline, Integer targetRespondents, String trend, Category category, List<SurveyQuestion> surveyQuestions) {
+    public Survey(User user, String topic, String description, Integer age, Gender gender,
+                  LocalDate deadline, Integer targetRespondents, Integer currentRespondents,
+                  SurveyStatus surveyState, Category category, List<SurveyQuestion> surveyQuestions) {
+        this.user = user;
         this.topic = topic;
         this.description = description;
         this.age = age;
         this.gender = gender;
         this.deadline = deadline;
         this.targetRespondents = targetRespondents;
-        this.trend = trend;
+        this.currentRespondents = (currentRespondents != null) ? currentRespondents : 0; //null일 경우 0으로 저장.;
+        this.surveyState = surveyState;
         this.category = category;
         this.surveyQuestions = surveyQuestions;
+    }
+
+    public void updateSurveyPoint(int point) {
+        this.point = point;
     }
 }
