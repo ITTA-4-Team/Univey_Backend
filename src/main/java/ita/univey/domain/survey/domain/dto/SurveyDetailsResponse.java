@@ -24,5 +24,4 @@ public class SurveyDetailsResponse {
     @NotEmpty
     private String description;
 
-    private List<ChatGptRes> recommendedQuestions;
 }

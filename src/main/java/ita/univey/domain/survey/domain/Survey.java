@@ -25,6 +25,7 @@ public class Survey extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
+
     //설문 생성한 유저
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
