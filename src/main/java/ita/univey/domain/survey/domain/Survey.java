@@ -3,6 +3,7 @@ package ita.univey.domain.survey.domain;
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.repository.Gender;
+import ita.univey.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,10 @@ public class Survey extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
+    //설문 생성한 유저
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user")
+    private User user;
 
     @Column(name = "topic")
     private String topic;
@@ -56,8 +61,9 @@ public class Survey extends BaseEntity {
     private List<SurveyQuestion> surveyQuestions;
 
     @Builder
-    public Survey(String topic, String description, Integer age, Gender gender,
+    public Survey(User user, String topic, String description, Integer age, Gender gender,
                   LocalDate deadline, Integer targetRespondents, String trend, Category category, List<SurveyQuestion> surveyQuestions) {
+        this.user = user;
         this.topic = topic;
         this.description = description;
         this.age = age;

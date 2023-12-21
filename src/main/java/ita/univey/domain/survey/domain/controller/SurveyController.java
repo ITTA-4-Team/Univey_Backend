@@ -11,9 +11,11 @@ import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
+import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,10 +29,12 @@ import java.util.List;
 public class SurveyController {
     private final SurveyService surveyService;
     private final SurveyQuestionRepository surveyQuestionRepository;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/create")
-    public ResponseEntity<BaseResponse<Long>> createSurvey(@Valid @RequestBody SurveyCreateDto surveyCreateDto) {
-        Long surveyId = surveyService.createSurvey(surveyCreateDto);
+    public ResponseEntity<BaseResponse<Long>> createSurvey(@Valid @RequestBody SurveyCreateDto surveyCreateDto, Authentication authentication) {
+        String userEmail = authentication.getName();
+        Long surveyId = surveyService.createSurvey(surveyCreateDto, userEmail);
 
         // 성공 응답을 생성 , gpt 추천 질문 생성해서 보내야 함.
         BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, surveyId);

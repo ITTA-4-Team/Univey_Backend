@@ -1,6 +1,8 @@
 package ita.univey.domain.user.domain;
 
+import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.common.BaseEntity;
+import ita.univey.domain.survey.domain.Survey;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -48,6 +51,9 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roleSet;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Survey> surveyList;
 
     @Builder
     public User(String email, String password, String name, Integer point, String providerId, Set<UserRole> roleSet) {
