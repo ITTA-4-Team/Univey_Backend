@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SurveyQuestionAnswerDto {
+    private Long answer_id;
     private String answer;
 }

@@ -5,10 +5,7 @@ import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.repository.Gender;
 import ita.univey.domain.survey.domain.repository.SurveyStatus;
 import ita.univey.domain.user.domain.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
@@ -20,6 +17,7 @@ import java.util.List;
 @Table(name = "Survey")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Where(clause = "status = 'ACTIVE'")
 public class Survey extends BaseEntity {
 
@@ -30,7 +28,7 @@ public class Survey extends BaseEntity {
 
     //설문 생성한 유저
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "users")
     private User user;
 
     @Column(name = "topic")
@@ -68,7 +66,7 @@ public class Survey extends BaseEntity {
     private List<SurveyQuestion> surveyQuestions;
 
     @Column(name="point")
-    private int point;
+    private Integer point;
 
     @Builder
     public Survey(User user, String topic, String description, Integer age, Gender gender,

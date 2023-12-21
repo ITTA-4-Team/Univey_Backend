@@ -34,14 +34,19 @@ public class Participation extends BaseEntity {
     @JoinColumn(name = "survey_question")
     private SurveyQuestion surveyQuestion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_question_answer")
+    private SurveyQuestionAnswer surveyQuestionAnswer;
+
     @Column(name = "content")
     private String content;
 
     @Builder
-    public Participation(User user, Survey survey, SurveyQuestion surveyQuestion, String content) {
+    public Participation(User user, Survey survey, SurveyQuestion surveyQuestion, SurveyQuestionAnswer surveyQuestionAnswer, String content) {
         this.user = user;
         this.survey = survey;
         this.surveyQuestion = surveyQuestion;
+        this.surveyQuestionAnswer = surveyQuestionAnswer;
         this.content = content;
     }
 }

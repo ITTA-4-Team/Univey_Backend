@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 public class ParticipationAnswerDto {
     @NotNull
     private Long question_id;
-    @NotNull
+
+    private Long answer_id;
     private String content;
 }

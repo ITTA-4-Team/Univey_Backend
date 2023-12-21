@@ -30,6 +30,7 @@ public class SurveyQuestionService {
             List<SurveyQuestionAnswer> questionAnswerList = surveyQuestionAnswerRepository.findByQuestionId(question.getId());
             List<SurveyQuestionAnswerDto> answerDtoList = questionAnswerList.stream()
                     .map(answers -> SurveyQuestionAnswerDto.builder()
+                            .answer_id(answers.getId())
                             .answer(answers.getAnswer())
                             .build())
                     .collect(Collectors.toList());
