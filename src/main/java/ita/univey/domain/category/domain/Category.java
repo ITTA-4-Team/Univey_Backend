@@ -12,7 +12,6 @@ import java.util.List;
 @Table(name = "Category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
 @Where(clause = "status = 'ACTIVE'")
 @AllArgsConstructor
 

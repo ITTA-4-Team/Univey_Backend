@@ -1,27 +1,23 @@
-package ita.univey.domain.survey.domain.dto;
+package ita.univey.domain.user.domain.dto;
 
-import ita.univey.domain.gpt.dto.ChatGptRes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveyDetailsResponse {
+public class UserLoginResponseDto {
 
     @NotEmpty
-    private Long id;
+    private String userName;
 
     @NotEmpty
-    private String topic;
+    private Integer point;
 
-    @NotEmpty
-    private String description;
 
 }
