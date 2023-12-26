@@ -40,6 +40,13 @@ dependencies {
 
     // gpt
     implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
+
+    //json
+    implementation 'org.json:json:20200518'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 }
 
 tasks.named('bootBuildImage') {

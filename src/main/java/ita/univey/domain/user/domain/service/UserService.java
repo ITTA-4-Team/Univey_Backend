@@ -6,9 +6,11 @@ import ita.univey.domain.user.domain.UserRole;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
 import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.global.CustomLogicException;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -81,4 +83,5 @@ public class UserService {
         return jwt;
 
     }
+
 }

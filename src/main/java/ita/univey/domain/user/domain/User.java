@@ -3,10 +3,7 @@ package ita.univey.domain.user.domain;
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.Survey;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
@@ -18,6 +15,7 @@ import java.util.Set;
 @Table(name = "User")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Where(clause = "status = 'ACTIVE'")
 public class User extends BaseEntity {
 
@@ -36,6 +34,7 @@ public class User extends BaseEntity {
     private String name;
 
     @Column(name = "point")
+    @ColumnDefault("0")
     private Integer point;
 
     @Column(name = "provider_id", nullable = false, unique = true, updatable = false)

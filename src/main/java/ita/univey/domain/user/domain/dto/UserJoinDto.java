@@ -1,12 +1,11 @@
 package ita.univey.domain.user.domain.dto;
 
 import ita.univey.domain.user.domain.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -23,6 +22,8 @@ public class UserJoinDto {
 
     private String providerId;
 
+
+
     public static UserJoinDto from(User user) {
         if (user == null) return null;
 
@@ -32,5 +33,30 @@ public class UserJoinDto {
                 .password(user.getPassword())
                 .providerId(user.getProviderId())
                 .build();
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @Builder
+    @AllArgsConstructor
+    public static class Response {
+        private Long id;
+        @NotEmpty
+        private String name;
+        @NotEmpty
+        private String email;
+        @NotEmpty
+        private String password;
+
+        private String providerId;
+
+        private Set<String> roleSet;
+
+        private Long point;
+
+        public void privateResponse() {
+            this.point = point;
+        }
     }
 }
