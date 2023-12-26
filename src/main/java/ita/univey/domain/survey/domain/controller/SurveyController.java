@@ -9,6 +9,8 @@ import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
 import ita.univey.domain.survey.domain.service.ParticipationService;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
+import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
 import ita.univey.global.jwt.JwtProvider;
@@ -31,6 +33,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/surveys")
 public class SurveyController {
+    private final UserRepository userRepository;
+    private final UserService userService;
     private final SurveyService surveyService;
     private final SurveyQuestionRepository surveyQuestionRepository;
     private final JwtProvider jwtProvider;
@@ -107,14 +111,17 @@ public class SurveyController {
     }
 
     @PostMapping("/create/submit/{surveyId}")
-    public ResponseEntity<BaseResponse<Long>> createQuestions(@PathVariable Long surveyId) {
+    public ResponseEntity<BaseResponse<Integer>> createQuestions(@PathVariable Long surveyId, Authentication authentication) {
 
+        String userEmail = authentication.getName();
+        User submitSurveyUser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new RuntimeException("survey submit 중 찾을 수 없는 user!"));
         int countQuestions = (int) surveyQuestionRepository.countBySurveyId(surveyId);
+        int surveyPoint = surveyService.updatePointById(surveyId, countQuestions);
+        Integer updatedUserPoint = userService.updateUserPoint(submitSurveyUser, submitSurveyUser.getPoint() - surveyPoint);
 
-        surveyService.updatePointById(surveyId, countQuestions);
 
         // 성공 응답을 생성 , gpt 추천 질문 생성해서 보내야 함.
-        BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS);
+        BaseResponse<Integer> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, updatedUserPoint);
 
         return ResponseEntity.ok(successResponse);
     }
