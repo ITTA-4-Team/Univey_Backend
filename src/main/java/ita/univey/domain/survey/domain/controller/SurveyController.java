@@ -8,6 +8,7 @@ import ita.univey.domain.survey.domain.repository.QuestionType;
 import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
 import ita.univey.domain.survey.domain.service.ParticipationService;
 import ita.univey.domain.survey.domain.service.SurveyService;
+import ita.univey.domain.user.domain.User;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
 import ita.univey.global.jwt.JwtProvider;
