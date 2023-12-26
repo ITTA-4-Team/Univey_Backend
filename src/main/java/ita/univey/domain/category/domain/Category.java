@@ -28,4 +28,8 @@ public class Category extends BaseEntity {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY) // 일대다 양방향 관계로 수정
     private List<Survey> surveyList;
 
+    @Builder
+    public Category(String category) {
+        this.category = category;
+    }
 }
