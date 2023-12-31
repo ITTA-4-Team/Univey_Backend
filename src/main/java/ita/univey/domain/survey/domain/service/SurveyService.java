@@ -2,18 +2,20 @@ package ita.univey.domain.survey.domain.service;
 
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.category.domain.repository.CategoryRepository;
+import ita.univey.domain.survey.domain.Participation;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.dto.QuestionDto;
 import ita.univey.domain.survey.domain.dto.SurveyCreateDto;
 import ita.univey.domain.survey.domain.dto.SurveyDto;
 import ita.univey.domain.survey.domain.repository.Gender;
+import ita.univey.domain.survey.domain.repository.ParticipationRepository;
 import ita.univey.domain.survey.domain.repository.SurveyRepository;
 import ita.univey.domain.survey.domain.repository.SurveyStatus;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.CustomLogicException;
 import ita.univey.global.ErrorCode;
-import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,7 +33,10 @@ public class SurveyService {
     private final CategoryRepository categoryRepository;
     private final SurveyRepository surveyRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final ParticipationRepository participationRepository;
     private final SurveyQuestionService surveyQuestionService;
+
 
     public Survey findSurvey(Long surveyId) {
         Survey survey = surveyRepository.findSurveyById(surveyId).orElseThrow(() -> new RuntimeException("찾을 수 없는 설문!"));
@@ -93,5 +99,22 @@ public class SurveyService {
                 .build();
 
         return dto;
+    }
+
+    public List<Survey> getCreateSurveyByUserEmail(String email) {
+        User user = userService.getUserByEmail(email);
+
+        return surveyRepository.findAllByUser(user);
+    }
+
+    public List<Survey> getParticipatedSurveyByUserEmail(String email) {
+        User user = userService.getUserByEmail(email);
+        List<Participation> allByUser = participationRepository.findAllByUser(user);
+        List<Survey> surveyList = new ArrayList<>();
+
+        for (Participation participation : allByUser) {
+            surveyList.add(participation.getSurvey());
+        }
+        return surveyList;
     }
 }

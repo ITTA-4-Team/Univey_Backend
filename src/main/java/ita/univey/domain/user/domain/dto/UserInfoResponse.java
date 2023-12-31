@@ -11,13 +11,19 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponseDto {
+public class UserInfoResponse {
 
     @NotEmpty
-    private String userName;
+    public String name;
 
     @NotEmpty
-    private String email;
+    public String email;
 
+    // 회원가입 시 닉네임, 전화번호 입력하는 화면 나오면 추가
+    //@NotEmpty
+    public String nickName;
 
+    //@NotEmpty
+    public String phoneNumber;
 }
+

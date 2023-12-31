@@ -11,13 +11,25 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponseDto {
+public class UserSurveyResponse {
 
     @NotEmpty
-    private String userName;
+    private Long surveyId;
 
     @NotEmpty
-    private String email;
+    private String topic;
 
+    @NotEmpty
+    private String description;
 
+    @NotEmpty
+    private String category;
+
+    @NotEmpty
+    private String createdDay;
+
+    private String deadline;
+
+    @NotEmpty
+    private Integer point;
 }
