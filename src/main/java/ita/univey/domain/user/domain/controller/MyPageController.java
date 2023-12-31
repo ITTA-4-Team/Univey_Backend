@@ -11,14 +11,12 @@ import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,7 +53,7 @@ public class MyPageController {
     }
 
     @GetMapping("/surveys")
-    public BaseResponse<Object> getUserSurveys(@RequestParam String type, Authentication authentication) {
+    public BaseResponse<List<UserSurveyResponse>> getUserSurveys(@RequestParam String type, Authentication authentication) {
         String userEmail = authentication.getName();
         //User userByEmail = userService.getUserByEmail(userEmail);
 
@@ -87,5 +85,12 @@ public class MyPageController {
 
         }
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, response);
+    }
+
+    @GetMapping("/surveys/{surveyId}/close")
+    public BaseResponse<Object> terminateSurvey(@PathVariable Long surveyId) {
+        Survey survey = surveyService.findSurvey(surveyId);
+        surveyService.closeSurvey(survey);
+        return BaseResponse.success(SuccessCode.SURVEY_TERMINATED_SUCCESS);
     }
 }

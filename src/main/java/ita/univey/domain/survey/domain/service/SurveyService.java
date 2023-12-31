@@ -117,4 +117,9 @@ public class SurveyService {
         }
         return surveyList;
     }
+
+    @Transactional
+    public void closeSurvey(Survey survey) {
+        survey.endSurvey();
+    }
 }

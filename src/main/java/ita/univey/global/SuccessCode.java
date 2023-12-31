@@ -15,6 +15,7 @@ public enum SuccessCode {
     CUSTOM_SUCCESS(OK, "~ 조회에 성공했습니다."),
     CUSTOM_CREATED_SUCCESS(CREATED, "~ 생성에 성공했습니다."),
     CUSTOM_QUESTION_SUCCESS(OK, "ChatGPT 요청에 성공했습니다."),
+    SURVEY_TERMINATED_SUCCESS(OK, "Survey 종료에 성공했습니다"),
     SURVEY_RETRIEVED_SUCCESS(OK, "Survey 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
