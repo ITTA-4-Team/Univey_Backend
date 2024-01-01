@@ -39,7 +39,6 @@ public class PointTransaction extends BaseEntity {
     @Column(name = "remaining_amount", nullable = false, updatable = false)
     private Integer remainingPoints;
 
-
     @Builder
     public PointTransaction(User user, PointType pointType, Integer pointAmount, Survey survey, Integer remainingPoints) {
         this.user = user;

@@ -80,14 +80,4 @@ public class ParticipationService {
         findSur.setCurrentRespondents(findSur.getCurrentRespondents() + 1);
     }
 
-    /*default Participation dtoToEntity(User user, Survey survey, SurveyQuestion surveyQuestion, String content) {
-        Participation participation = Participation.builder()
-                .user(user)
-                .survey(survey)
-                .surveyQuestion(surveyQuestion)
-                .content(content)
-                .build();
-        return participation;
-    }*/
-
 }
