@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface PointTransactionRepository extends JpaRepository<PointTransaction, Long> {
     List<PointTransaction> findAllByUserAndPointTypeOrderByCreatedAtDesc(User user, PointType pointType);
+
+    List<PointTransaction> findAllByUserOrderByCreatedAtDesc(User user);
 }

@@ -117,7 +117,7 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
-                        .pointType(PointType.POINT_PURCHASE)
+                        .pointType(pointTransaction.getPointType())
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
@@ -132,7 +132,8 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
-                        .pointType(PointType.POINT_USAGE)
+                        .sub("설문 생성")
+                        .pointType(pointTransaction.getPointType())
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
@@ -148,13 +149,37 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
+                        .sub("설문 참여")
                         .pointType(PointType.POINT_GAIN)
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
                 pointHistoryResponse.add(history);
             }
+        } else if (type.equals("all")) {
+            List<PointTransaction> userPointHistory = pointTransactionService
+                    .getUserTransactionsOrderedByTime(userByEmail);
 
+            for (PointTransaction pointTransaction : userPointHistory) {
+                String sub = null;
+                PointType transactionType = pointTransaction.getPointType();
+                if (transactionType == PointType.POINT_GAIN) {
+                    sub = "설문 참여";
+                } else if (transactionType == PointType.POINT_USAGE) {
+                    sub = "설문 생성";
+                }
+
+                String formattedCreatedDay = pointTransaction.getCreatedAt().format(formatter);
+                UserPointHistoryResponse history = UserPointHistoryResponse.builder()
+                        .createdDay(formattedCreatedDay)
+                        .topic(pointTransaction.getSurvey().getTopic())
+                        .sub(sub)
+                        .pointType(transactionType)
+                        .point(pointTransaction.getPointAmount())
+                        .remainingPoint(pointTransaction.getRemainingPoints())
+                        .build();
+                pointHistoryResponse.add(history);
+            }
         }
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, pointHistoryResponse);
     }

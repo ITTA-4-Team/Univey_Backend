@@ -18,6 +18,10 @@ public class PointTransactionService {
         return pointTransactionRepository.findAllByUserAndPointTypeOrderByCreatedAtDesc(user, pointType);
     }
 
+    public List<PointTransaction> getUserTransactionsOrderedByTime(User user) {
+        return pointTransactionRepository.findAllByUserOrderByCreatedAtDesc(user);
+    }
+
     public void savePointTransaction(PointTransaction pointTransaction) {
         pointTransactionRepository.save(pointTransaction);
     }
