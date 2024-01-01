@@ -4,9 +4,7 @@ import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.category.domain.repository.CategoryRepository;
 import ita.univey.domain.survey.domain.Participation;
 import ita.univey.domain.survey.domain.Survey;
-import ita.univey.domain.survey.domain.dto.QuestionDto;
-import ita.univey.domain.survey.domain.dto.SurveyCreateDto;
-import ita.univey.domain.survey.domain.dto.SurveyDto;
+import ita.univey.domain.survey.domain.dto.*;
 import ita.univey.domain.survey.domain.repository.Gender;
 import ita.univey.domain.survey.domain.repository.ParticipationRepository;
 import ita.univey.domain.survey.domain.repository.SurveyRepository;
@@ -18,6 +16,10 @@ import ita.univey.global.CustomLogicException;
 import ita.univey.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -123,4 +126,118 @@ public class SurveyService {
     public void closeSurvey(Survey survey) {
         survey.endSurvey();
     }
+
+    @Transactional
+    public Page<SurveyListDto> getSurveyList(String userEmail, String category, String postType, String orderType, PageReqDto pageReqDto) {
+        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+        User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+        Long userId = finduser.getId();
+
+        Category findCategory = null;
+        SurveyStatus findStatus = null;
+
+        if (!category.equals("all")) {
+            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+        }
+
+        if (!postType.equals("all") && !postType.equals("participated")) {
+            findStatus = SurveyStatus.getStatusByValue(postType);
+        }
+
+        List<Long> participatedSurveyIds = participationRepository.findSurveyIdsByUserId(userId); //설문 참여 했던 설문 아이디 리스트
+
+        if ("participated".equals(postType)) { //참여한 설문 대상
+            if ("all".equals(category)) {
+                return surveyRepository.findAllByIdIn(participatedSurveyIds, pageable)
+                        .map(this::mapToSurveyListDto);
+            } else {
+                return surveyRepository.findByCategoryAndIdIn(findCategory, participatedSurveyIds, pageable)
+                        .map(this::mapToSurveyListDto);
+            }
+        } else { //참여 안한 설문 대상
+            List<Long> excludedSurveyIds = surveyRepository.findIdsNotIn(participatedSurveyIds);
+            if ("all".equals(postType)) { //진행 중 + 완료
+                if ("all".equals(category)) {
+                    return surveyRepository.findAllByIdIn(excludedSurveyIds, pageable)
+                            .map(this::mapToSurveyListDto);
+                } else {
+                    return surveyRepository.findByCategoryAndIdIn(findCategory, excludedSurveyIds, pageable)
+                            .map(this::mapToSurveyListDto);
+                }
+            } else { //진행 중 or 완료
+                if ("all".equals(category)) {
+                    return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
+                            .map(this::mapToSurveyListDto);
+                } else {
+                    return surveyRepository.findByIdAndSurveyStatusAndCategoryIn(excludedSurveyIds, findStatus, findCategory, pageable)
+                            .map(this::mapToSurveyListDto);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public Page<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
+        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+        return surveyRepository.findByTopicContaining(keyword, pageable)
+                .map(this::mapToSurveyListDto);
+    }
+
+    @Transactional
+    public List<TrendListDto> getTrendList(String category) {
+        Category findCategory = null;
+
+        if (!category.equals("all")) {
+            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+            return surveyRepository.findByTrendTrueAndCategory(findCategory)
+                    .stream().map(this::mapToTrendListDto)
+                    .collect(Collectors.toList());
+        }
+        else {
+            return surveyRepository.findByTrendTrue()
+                    .stream().map(this::mapToTrendListDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateSurveyStatus() {
+        List<Survey> surveyList = surveyRepository.findBySurveyStateAndDeadlineBefore(SurveyStatus.IN_PROGRESS, LocalDate.now());
+
+        surveyList.forEach(survey -> survey.setSurveyState(SurveyStatus.COMPLETED));
+        surveyRepository.saveAll(surveyList);
+    }
+
+    private SurveyListDto mapToSurveyListDto(Survey survey) {
+        SurveyListDto surveyListDto = new SurveyListDto();
+        surveyListDto.setId(survey.getId());
+        surveyListDto.setTopic(survey.getTopic());
+        surveyListDto.setDescription(survey.getDescription());
+        surveyListDto.setCategory(survey.getCategory().getCategory());
+        surveyListDto.setTime(survey.getTime());
+        surveyListDto.setAge(survey.getAge());
+        surveyListDto.setTargetRespondents(survey.getTargetRespondents());
+        surveyListDto.setCurrentRespondents(survey.getCurrentRespondents());
+        surveyListDto.setPoint(survey.getPoint());
+        surveyListDto.setStatus(survey.getSurveyState().getValue());
+        surveyListDto.setTrend(survey.isTrend());
+        surveyListDto.setDead_line(survey.getDeadline());
+        return surveyListDto;
+    }
+
+    private TrendListDto mapToTrendListDto(Survey survey) {
+        TrendListDto trendListDto = new TrendListDto();
+        trendListDto.setId(survey.getId());
+        trendListDto.setTopic(survey.getTopic());
+        trendListDto.setDescription(survey.getDescription());
+        trendListDto.setCategory(survey.getCategory().getCategory());
+        trendListDto.setAge(survey.getAge());
+        trendListDto.setTargetRespondents(survey.getTargetRespondents());
+        trendListDto.setCurrentRespondents(survey.getCurrentRespondents());
+        trendListDto.setPoint(survey.getPoint());
+        trendListDto.setDead_line(survey.getDeadline());
+        return trendListDto;
+    }
+
 }
