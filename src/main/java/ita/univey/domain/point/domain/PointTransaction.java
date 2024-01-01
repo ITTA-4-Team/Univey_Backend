@@ -1,6 +1,7 @@
 package ita.univey.domain.point.domain;
 
 import ita.univey.domain.common.BaseEntity;
+import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,16 +25,26 @@ public class PointTransaction extends BaseEntity {
     @JoinColumn(name = "user", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey", nullable = false)
+    private Survey survey;
+
     @Column(name = "point_type", nullable = false, updatable = false)
     private PointType pointType;
 
     @Column(name = "point_amount", nullable = false, updatable = false)
     private Integer pointAmount;
 
+    @Column(name = "remaining_amount", nullable = false, updatable = false)
+    private Integer remainingPoints;
+
+
     @Builder
-    public PointTransaction(User user, PointType pointType, Integer pointAmount) {
+    public PointTransaction(User user, PointType pointType, Integer pointAmount, Survey survey, Integer remainingPoints) {
         this.user = user;
         this.pointType = pointType;
         this.pointAmount = pointAmount;
+        this.survey = survey;
+        this.remainingPoints = remainingPoints;
     }
 }

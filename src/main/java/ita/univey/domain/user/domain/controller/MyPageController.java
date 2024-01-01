@@ -1,10 +1,14 @@
 package ita.univey.domain.user.domain.controller;
 
+import ita.univey.domain.point.domain.PointTransaction;
+import ita.univey.domain.point.domain.PointTransactionService;
+import ita.univey.domain.point.domain.PointType;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.dto.UserInfoResponse;
 import ita.univey.domain.user.domain.dto.UserLoginResponseDto;
+import ita.univey.domain.user.domain.dto.UserPointHistoryResponse;
 import ita.univey.domain.user.domain.dto.UserSurveyResponse;
 import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
@@ -25,6 +29,7 @@ public class MyPageController {
 
     private final UserService userService;
     private final SurveyService surveyService;
+    private final PointTransactionService pointTransactionService;
 
     @GetMapping
     public BaseResponse<UserLoginResponseDto> getMyPage(Authentication authentication) {
@@ -92,5 +97,63 @@ public class MyPageController {
         Survey survey = surveyService.findSurvey(surveyId);
         surveyService.closeSurvey(survey);
         return BaseResponse.success(SuccessCode.SURVEY_TERMINATED_SUCCESS);
+    }
+
+    @GetMapping("/point")
+    public BaseResponse<List<UserPointHistoryResponse>> pointHistory(@RequestParam String type, Authentication authentication) {
+        String userEmail = authentication.getName();
+        User userByEmail = userService.getUserByEmail(userEmail);
+
+        List<UserPointHistoryResponse> pointHistoryResponse = new ArrayList();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+
+        if (type.equals("purchase")) {
+            List<PointTransaction> userPointHistory = pointTransactionService
+                    .getUserTransactionsByTypeOrderedByTime(userByEmail, PointType.POINT_PURCHASE);
+            for (PointTransaction pointTransaction : userPointHistory) {
+
+                String formattedCreatedDay = pointTransaction.getCreatedAt().format(formatter);
+                UserPointHistoryResponse history = UserPointHistoryResponse.builder()
+                        .createdDay(formattedCreatedDay)
+                        .topic(pointTransaction.getSurvey().getTopic())
+                        .pointType(PointType.POINT_PURCHASE)
+                        .point(pointTransaction.getPointAmount())
+                        .remainingPoint(pointTransaction.getRemainingPoints())
+                        .build();
+                pointHistoryResponse.add(history);
+            }
+        } else if (type.equals("usage")) {
+            List<PointTransaction> userPointHistory = pointTransactionService
+                    .getUserTransactionsByTypeOrderedByTime(userByEmail, PointType.POINT_USAGE);
+            for (PointTransaction pointTransaction : userPointHistory) {
+
+                String formattedCreatedDay = pointTransaction.getCreatedAt().format(formatter);
+                UserPointHistoryResponse history = UserPointHistoryResponse.builder()
+                        .createdDay(formattedCreatedDay)
+                        .topic(pointTransaction.getSurvey().getTopic())
+                        .pointType(PointType.POINT_USAGE)
+                        .point(pointTransaction.getPointAmount())
+                        .remainingPoint(pointTransaction.getRemainingPoints())
+                        .build();
+                pointHistoryResponse.add(history);
+            }
+        } else if (type.equals("acquisition")) {
+            List<PointTransaction> userPointHistory = pointTransactionService
+                    .getUserTransactionsByTypeOrderedByTime(userByEmail, PointType.POINT_GAIN);
+            for (PointTransaction pointTransaction : userPointHistory) {
+
+                String formattedCreatedDay = pointTransaction.getCreatedAt().format(formatter);
+                UserPointHistoryResponse history = UserPointHistoryResponse.builder()
+                        .createdDay(formattedCreatedDay)
+                        .topic(pointTransaction.getSurvey().getTopic())
+                        .pointType(PointType.POINT_GAIN)
+                        .point(pointTransaction.getPointAmount())
+                        .remainingPoint(pointTransaction.getRemainingPoints())
+                        .build();
+                pointHistoryResponse.add(history);
+            }
+
+        }
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, pointHistoryResponse);
     }
 }
