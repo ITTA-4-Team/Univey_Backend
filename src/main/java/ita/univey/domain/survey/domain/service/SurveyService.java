@@ -82,10 +82,11 @@ public class SurveyService {
     }
 
     @Transactional
-    public void updatePointById(Long id, int countQuestions) {
+    public int updatePointById(Long id, int countQuestions) {
         Survey findSurvey = surveyRepository.findSurveyById(id).orElseThrow(() -> new RuntimeException("survey point 업데이트 중 없는 survey 조회"));
         int point = countQuestions * 10; // 문제 1개당 10P, 비율 바뀔 시 이 숫자만 수정하도록.
         findSurvey.updateSurveyPoint(point);
+        return point;
     }
 
     public SurveyDto getSurveyDetail(Long surveyId) {
