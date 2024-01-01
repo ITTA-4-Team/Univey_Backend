@@ -6,11 +6,9 @@ import ita.univey.domain.user.domain.UserRole;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
 import ita.univey.domain.user.domain.repository.UserRepository;
-import ita.univey.global.CustomLogicException;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -26,14 +24,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository UserRepository;
+    private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public Long join(UserJoinDto userJoinDto) {
 
-        if (UserRepository.findUserByEmail(userJoinDto.getEmail()).orElse(null) != null) {
+        if (userRepository.findUserByEmail(userJoinDto.getEmail()).orElse(null) != null) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
         // 가입되어 있지 않은 회원이면,
@@ -58,7 +56,7 @@ public class UserService {
                 .providerId(providerId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
 
-        User saveUser = UserRepository.save(user);
+        User saveUser = userRepository.save(user);
         return saveUser.getId();
 
     }
@@ -82,5 +80,9 @@ public class UserService {
 
         return jwt;
 
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("email로 user 찾기 실패"));
     }
 }

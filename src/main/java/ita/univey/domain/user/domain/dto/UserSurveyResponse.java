@@ -1,6 +1,5 @@
 package ita.univey.domain.user.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,18 +11,25 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponseDto {
+public class UserSurveyResponse {
 
     @NotEmpty
-    private String userName;
+    private Long surveyId;
 
     @NotEmpty
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private String topic;
+
+    @NotEmpty
+    private String description;
+
+    @NotEmpty
+    private String category;
+
+    @NotEmpty
+    private String createdDay;
+
+    private String deadline;
+
+    @NotEmpty
     private Integer point;
-
-    @NotEmpty
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String email;
-
-
 }
