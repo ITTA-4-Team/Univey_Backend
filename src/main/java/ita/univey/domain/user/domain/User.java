@@ -63,4 +63,9 @@ public class User extends BaseEntity {
         this.roleSet = roleSet;
     }
 
+    public Integer updatePoint(Integer point) {
+        this.point += point;
+        return this.point;
+    }
+
 }

@@ -1,7 +1,7 @@
 package ita.univey.domain.user.domain.controller;
 
 import ita.univey.domain.point.domain.PointTransaction;
-import ita.univey.domain.point.domain.PointTransactionService;
+import ita.univey.domain.point.domain.service.PointTransactionService;
 import ita.univey.domain.point.domain.PointType;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.service.SurveyService;
@@ -14,14 +14,15 @@ import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mypage")
@@ -136,6 +137,7 @@ public class MyPageController {
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
                 pointHistoryResponse.add(history);
+                log.info("history=>{}", history);
             }
         } else if (type.equals("acquisition")) {
             List<PointTransaction> userPointHistory = pointTransactionService

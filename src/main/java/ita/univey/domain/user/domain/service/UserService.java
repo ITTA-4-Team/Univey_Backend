@@ -85,4 +85,8 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("email로 user 찾기 실패"));
     }
+
+    public Integer updatePointByUser(User user, Integer point) {
+        return user.updatePoint(point);
+    }
 }

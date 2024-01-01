@@ -1,5 +1,8 @@
 package ita.univey.domain.survey.domain.controller;
 
+import ita.univey.domain.point.domain.PointTransaction;
+import ita.univey.domain.point.domain.PointType;
+import ita.univey.domain.point.domain.service.PointTransactionService;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.SurveyQuestion;
 import ita.univey.domain.survey.domain.SurveyQuestionAnswer;
@@ -9,6 +12,7 @@ import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
 import ita.univey.domain.survey.domain.service.ParticipationService;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
+import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
 import ita.univey.global.SuccessCode;
 import ita.univey.global.jwt.JwtProvider;
@@ -35,6 +39,8 @@ public class SurveyController {
     private final SurveyQuestionRepository surveyQuestionRepository;
     private final JwtProvider jwtProvider;
     private final ParticipationService participationService;
+    private final PointTransactionService pointTransactionService;
+    private final UserService userService;
 
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<Long>> createSurvey(@Valid @RequestBody SurveyCreateDto surveyCreateDto, Authentication authentication) {
@@ -62,12 +68,14 @@ public class SurveyController {
 
     }
 
-    @PostMapping("/create/details/{surveyId}")
-    public ResponseEntity<BaseResponse<Long>> createQuestions(@Valid @RequestBody SurveyQuestionsCreateDto questionsCreateDto, @PathVariable Long surveyId) {
+
+    @PostMapping("/submit/{surveyId}")
+    public BaseResponse<Integer> submitQuestions(@Valid @RequestBody SurveyQuestionsCreateDto questionsCreateDto, @PathVariable Long surveyId) {
+
         Survey survey = surveyService.findSurvey(surveyId);
         List<SurveyQuestionsCreateDto.UserQuestions> userQuestions = questionsCreateDto.getUserQuestions();
+        int lenQuestion = userQuestions.size();
 
-        log.info("questionCreatDto => {}", questionsCreateDto);
         for (SurveyQuestionsCreateDto.UserQuestions userQuestion : userQuestions) {
             List<String> answers = userQuestion.getAnswer();
             List<SurveyQuestionAnswer> createAnswers = new ArrayList<>();
@@ -100,23 +108,22 @@ public class SurveyController {
 
         }
 
+
+        int surveyPoint = surveyService.updatePointById(surveyId, lenQuestion);
+        Integer updatedUserPoint = userService.updatePointByUser(survey.getUser(), -surveyPoint);
+        PointTransaction newPointTransaction = PointTransaction.builder()
+                .user(survey.getUser())
+                .survey(survey)
+                .pointType(PointType.POINT_USAGE)
+                .pointAmount(surveyPoint)
+                .remainingPoints(survey.getUser().getPoint())
+                .build();
+        pointTransactionService.savePointTransaction(newPointTransaction);
+
         // 성공 응답을 생성 , gpt 추천 질문 생성해서 보내야 함.
-        BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, survey.getId());
+        return BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, updatedUserPoint);
 
-        return ResponseEntity.ok(successResponse);
-    }
 
-    @PostMapping("/create/submit/{surveyId}")
-    public ResponseEntity<BaseResponse<Long>> createQuestions(@PathVariable Long surveyId) {
-
-        int countQuestions = (int) surveyQuestionRepository.countBySurveyId(surveyId);
-
-        surveyService.updatePointById(surveyId, countQuestions);
-
-        // 성공 응답을 생성 , gpt 추천 질문 생성해서 보내야 함.
-        BaseResponse<Long> successResponse = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS);
-
-        return ResponseEntity.ok(successResponse);
     }
 
     //설문 상세 및 응답 참여
