@@ -13,4 +13,5 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     @Query("SELECT p.survey.id FROM Participation p WHERE p.user.id = :userId")
     List<Long> findSurveyIdsByUserId(@Param(value = "userId") Long userId);
+
 }
