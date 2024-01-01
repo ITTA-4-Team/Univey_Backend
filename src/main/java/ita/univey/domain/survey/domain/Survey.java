@@ -68,10 +68,17 @@ public class Survey extends BaseEntity {
     @Column(name = "point")
     private Integer point;
 
+    @Column(name="trend")
+    private boolean trend;
+
+    @Column(name="time")
+    private Integer time;
+
     @Builder
     public Survey(User user, String topic, String description, Integer age, Gender gender,
                   LocalDate deadline, Integer targetRespondents, Integer currentRespondents,
-                  SurveyStatus surveyState, Category category, List<SurveyQuestion> surveyQuestions) {
+                  SurveyStatus surveyState, Category category, List<SurveyQuestion> surveyQuestions,
+                  boolean trend, Integer time) {
         this.user = user;
         this.topic = topic;
         this.description = description;
@@ -83,6 +90,8 @@ public class Survey extends BaseEntity {
         this.surveyState = surveyState;
         this.category = category;
         this.surveyQuestions = surveyQuestions;
+        this.trend = trend;
+        this.time = time;
     }
 
     public void updateSurveyPoint(int point) {
