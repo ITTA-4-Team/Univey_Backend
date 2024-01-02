@@ -9,4 +9,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByEmail(String email);
 
     Optional<User> findUserById(Long id);
+
+    // 해당 닉네임을 갖고있는 user가 본인말고 있는지
+    boolean existsByNickNameAndEmailNotContains(String nickname, String email);
+
+
 }

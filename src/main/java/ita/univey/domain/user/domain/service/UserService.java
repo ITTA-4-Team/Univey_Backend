@@ -99,4 +99,10 @@ public class UserService {
         user.updateUserInfo(userInfoDto);
         return user.getId();
     }
+
+    public boolean checkNicknameDuplicate(String nickname, String email) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
+        return userRepository.existsByNickNameAndEmailNotContains(nickname, user.getEmail());
+    }
+
 }

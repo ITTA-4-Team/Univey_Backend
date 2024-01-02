@@ -58,7 +58,13 @@ public class MyPageController {
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfo);
     }
 
-    @GetMapping("")
+    @GetMapping("/info/{nickname}/exists")
+    public BaseResponse<Boolean> checkNicknameDuplicate(@PathVariable String nickname, Authentication authentication) {
+        String userEmail = authentication.getName();
+        boolean response = !userService.checkNicknameDuplicate(nickname, userEmail);
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, response);
+    }
+
     @PatchMapping("/info")
     public BaseResponse<SuccessCode> updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
         String userEmail = authentication.getName();
