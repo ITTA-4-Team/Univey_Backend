@@ -6,7 +6,7 @@ import ita.univey.domain.point.domain.PointType;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
-import ita.univey.domain.user.domain.dto.UserInfoResponse;
+import ita.univey.domain.user.domain.dto.UserInfoDto;
 import ita.univey.domain.user.domain.dto.UserLoginResponseDto;
 import ita.univey.domain.user.domain.dto.UserPointHistoryResponse;
 import ita.univey.domain.user.domain.dto.UserSurveyResponse;
@@ -46,11 +46,11 @@ public class MyPageController {
     }
 
     @GetMapping("/info")
-    public BaseResponse<UserInfoResponse> getUserInfo(Authentication authentication) {
+    public BaseResponse<UserInfoDto> getUserInfo(Authentication authentication) {
         String userEmail = authentication.getName();
         User userByEmail = userService.getUserByEmail(userEmail);
 
-        UserInfoResponse userInfo = UserInfoResponse.builder()
+        UserInfoDto userInfo = UserInfoDto.builder()
                 .name(userByEmail.getName())
                 .email(userByEmail.getEmail())
                 .build();
@@ -58,8 +58,19 @@ public class MyPageController {
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfo);
     }
 
+    @GetMapping("")
+    @PatchMapping("/info")
+    public BaseResponse<SuccessCode> updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
+        String userEmail = authentication.getName();
+        Long id = userService.updateUserInfoByEmail(userEmail, userInfoDto);
+
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS);
+
+    }
+
     @GetMapping("/surveys")
     public BaseResponse<List<UserSurveyResponse>> getUserSurveys(@RequestParam String type, Authentication authentication) {
+
         String userEmail = authentication.getName();
         //User userByEmail = userService.getUserByEmail(userEmail);
 

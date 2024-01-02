@@ -3,6 +3,7 @@ package ita.univey.domain.user.domain;
 import ita.univey.domain.category.domain.Category;
 import ita.univey.domain.common.BaseEntity;
 import ita.univey.domain.survey.domain.Survey;
+import ita.univey.domain.user.domain.dto.UserInfoDto;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
@@ -26,6 +27,12 @@ public class User extends BaseEntity {
 
     @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
+
+    @Column(name = "nick_name", unique = true)
+    private String nickName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "password", nullable = false, updatable = false) // seucrtiy 설정을 위한 컬럼 추가
     private String password;
@@ -66,6 +73,11 @@ public class User extends BaseEntity {
     public Integer updatePoint(Integer point) {
         this.point += point;
         return this.point;
+    }
+
+    public void updateUserInfo(UserInfoDto userInfoDto) {
+        this.nickName = userInfoDto.getNickName();
+        this.phoneNumber = userInfoDto.getPhoneNumber();
     }
 
 }
