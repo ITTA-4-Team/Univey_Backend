@@ -1,5 +1,6 @@
 package ita.univey.domain.user.domain.dto;
 
+import ita.univey.domain.survey.domain.repository.SurveyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,13 +18,22 @@ public class UserSurveyResponse {
     private Long surveyId;
 
     @NotEmpty
+    private SurveyStatus status;
+
+    @NotEmpty
     private String topic;
 
     @NotEmpty
     private String description;
 
+    private Integer age;
+
     @NotEmpty
     private String category;
+
+    private Integer currentRespondets;
+
+    private Integer targetRespondets;
 
     @NotEmpty
     private String createdDay;

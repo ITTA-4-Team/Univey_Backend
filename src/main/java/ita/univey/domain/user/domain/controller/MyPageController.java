@@ -96,11 +96,15 @@ public class MyPageController {
             String deadline = survey.getDeadline().format(formatter);
             UserSurveyResponse userSurveyResponse = UserSurveyResponse.builder()
                     .surveyId(survey.getId())
+                    .status(survey.getSurveyState())
+                    .age(survey.getAge())
                     .topic(survey.getTopic())
                     .description(survey.getDescription())
                     .deadline(survey.getDescription())
                     .category(survey.getCategory().getCategory())
                     .createdDay(createdDate)
+                    .currentRespondets(survey.getCurrentRespondents())
+                    .targetRespondets(survey.getTargetRespondents())
                     .deadline(deadline)
                     .point(survey.getPoint())
                     .build();
