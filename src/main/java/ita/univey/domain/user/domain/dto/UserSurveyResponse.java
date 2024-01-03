@@ -31,9 +31,9 @@ public class UserSurveyResponse {
     @NotEmpty
     private String category;
 
-    private Integer currentRespondets;
+    private Integer currentRespondents;
 
-    private Integer targetRespondets;
+    private Integer targetRespondents;
 
     @NotEmpty
     private String createdDay;

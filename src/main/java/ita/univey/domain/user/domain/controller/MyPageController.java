@@ -103,8 +103,8 @@ public class MyPageController {
                     .deadline(survey.getDescription())
                     .category(survey.getCategory().getCategory())
                     .createdDay(createdDate)
-                    .currentRespondets(survey.getCurrentRespondents())
-                    .targetRespondets(survey.getTargetRespondents())
+                    .currentRespondents(survey.getCurrentRespondents())
+                    .targetRespondents(survey.getTargetRespondents())
                     .deadline(deadline)
                     .point(survey.getPoint())
                     .build();
