@@ -209,6 +209,20 @@ public class SurveyService {
         surveyRepository.saveAll(surveyList);
     }
 
+    public ResultDto getSurveyResult(Long surveyId) {
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+        List<ResultQuestionDto> resultQuestionDtoList = surveyQuestionService.getSurveyResultQuestion(surveyId);
+
+        ResultDto dto = ResultDto.builder()
+                .id(surveyId)
+                .topic(survey.getTopic())
+                .description(survey.getDescription())
+                .question(resultQuestionDtoList)
+                .build();
+
+        return dto;
+    }
+
     private SurveyListDto mapToSurveyListDto(Survey survey) {
         SurveyListDto surveyListDto = new SurveyListDto();
         surveyListDto.setId(survey.getId());
