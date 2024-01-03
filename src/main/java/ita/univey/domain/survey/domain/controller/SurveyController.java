@@ -180,4 +180,16 @@ public class SurveyController {
 
         return new BaseResponse<>(response.getStatus(), response.getMessage(), list);
     }
+
+    //설문 결과 보기
+    @Transactional
+    @GetMapping(value = "/result/{surveyId}")
+    public BaseResponse<Map<String, Object>> getSurveyResult(@PathVariable(value = "surveyId") Long surveyId) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("resultData", surveyService.getSurveyResult(surveyId));
+        BaseResponse<Map<String, Object>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, map);
+
+        return new BaseResponse<>(response.getStatus(), response.getMessage(), map);
+    }
 }

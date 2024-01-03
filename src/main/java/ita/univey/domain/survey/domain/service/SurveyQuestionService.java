@@ -3,7 +3,10 @@ package ita.univey.domain.survey.domain.service;
 import ita.univey.domain.survey.domain.SurveyQuestion;
 import ita.univey.domain.survey.domain.SurveyQuestionAnswer;
 import ita.univey.domain.survey.domain.dto.QuestionDto;
+import ita.univey.domain.survey.domain.dto.ResultQuestionDto;
 import ita.univey.domain.survey.domain.dto.SurveyQuestionAnswerDto;
+import ita.univey.domain.survey.domain.repository.ParticipationRepository;
+import ita.univey.domain.survey.domain.repository.QuestionType;
 import ita.univey.domain.survey.domain.repository.SurveyQuestionAnswerRepository;
 import ita.univey.domain.survey.domain.repository.SurveyQuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class SurveyQuestionService {
 
     private final SurveyQuestionRepository surveyQuestionRepository;
     private final SurveyQuestionAnswerRepository surveyQuestionAnswerRepository;
+    private final ParticipationRepository participationRepository;
 
     @Transactional
     public List<QuestionDto> getSurveyQuestion(Long surveyId){
@@ -47,6 +51,45 @@ public class SurveyQuestionService {
             questionDtoList.add(questionDto);
         });
         return questionDtoList;
+    }
+
+    @Transactional
+    public List<ResultQuestionDto> getSurveyResultQuestion(Long surveyId) {
+        List<ResultQuestionDto> resultQuestionDtoList = new ArrayList<>();
+        List<SurveyQuestion> questionList = surveyQuestionRepository.findBySurveyId(surveyId);
+
+        questionList.forEach(question -> {
+            if (question.getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+                List<SurveyQuestionAnswer> questionAnswerList = surveyQuestionAnswerRepository.findByQuestionId(question.getId());
+                List<String> answers = questionAnswerList.stream()
+                        .map(SurveyQuestionAnswer::getAnswer)
+                        .collect(Collectors.toList());
+                List<Integer> votes = questionAnswerList.stream()
+                        .map(participationRepository::countBySurveyQuestionAnswer)
+                        .collect(Collectors.toList());
+
+                ResultQuestionDto resultQuestionDto = ResultQuestionDto.builder()
+                        .question_num(question.getQuestionNum())
+                        .question_type(question.getQuestionType())
+                        .question(question.getQuestion())
+                        .answer(answers)
+                        .votes(votes)
+                        .build();
+                resultQuestionDtoList.add(resultQuestionDto);
+            } else {
+                List<String> answers = participationRepository.findContentBySurveyQuestion(question);
+
+                ResultQuestionDto resultQuestionDto = ResultQuestionDto.builder()
+                        .question_num(question.getQuestionNum())
+                        .question_type(question.getQuestionType())
+                        .question(question.getQuestion())
+                        .answer(answers)
+                        .build();
+                resultQuestionDtoList.add(resultQuestionDto);
+            }
+        });
+
+        return resultQuestionDtoList;
     }
 
 }
