@@ -14,6 +14,7 @@ import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
+import ita.univey.global.ErrorCode;
 import ita.univey.global.SuccessCode;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -131,12 +132,17 @@ public class SurveyController {
     @Transactional
     @GetMapping(value = "/participation/{surveyId}")
     public BaseResponse<Map<String, Object>> getSurveyDetail(Authentication authentication, @PathVariable(value = "surveyId") Long surveyId) {
+        String userEmail = authentication.getName();
+        if(surveyService.getDuplicationCheck(userEmail)) {
+            return BaseResponse.error(ErrorCode.DUPLICATE_PARTICIPATION, "중복 참여입니다.");
+        }
+        else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("surveyData", surveyService.getSurveyDetail(surveyId));
+            BaseResponse<Map<String, Object>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, map);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("surveyData", surveyService.getSurveyDetail(surveyId));
-        BaseResponse<Map<String, Object>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, map);
-
-        return new BaseResponse<>(response.getStatus(), response.getMessage(), map);
+            return new BaseResponse<>(response.getStatus(), response.getMessage(), map);
+        }
     }
 
     //답변 등록
