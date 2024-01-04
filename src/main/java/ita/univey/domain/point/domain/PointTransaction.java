@@ -22,7 +22,7 @@ public class PointTransaction extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user", nullable = false)
+    @JoinColumn(name = "users", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +30,7 @@ public class PointTransaction extends BaseEntity {
     private Survey survey;
 
     @Column(name = "point_type", nullable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
     private PointType pointType;
 
     @Column(name = "point_amount", nullable = false, updatable = false)
@@ -37,7 +38,6 @@ public class PointTransaction extends BaseEntity {
 
     @Column(name = "remaining_amount", nullable = false, updatable = false)
     private Integer remainingPoints;
-
 
     @Builder
     public PointTransaction(User user, PointType pointType, Integer pointAmount, Survey survey, Integer remainingPoints) {

@@ -9,6 +9,13 @@ public enum SurveyStatus {
     IN_PROGRESS("activeSurvey"),
     COMPLETED("completedSurvey");
     private String value;
+
+    public static SurveyStatus getStatusByValue(String value) {
+        for (SurveyStatus status : values()) {
+            if (status.getValue().equals(value)) {
+                return status;
+            }
+        }
+        return IN_PROGRESS;
+    }
 }
-
-
