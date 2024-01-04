@@ -60,7 +60,7 @@ public class SurveyService {
 
         String stringDeadline = surveyCreateDto.getDeadline();
         // 입력된 날짜 형식 지정
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 
         // LocalDate로 parse
         LocalDate deadline = LocalDate.parse(stringDeadline, formatter);
@@ -192,8 +192,7 @@ public class SurveyService {
             return surveyRepository.findByTrendTrueAndCategory(findCategory)
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
-        }
-        else {
+        } else {
             return surveyRepository.findByTrendTrue()
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());

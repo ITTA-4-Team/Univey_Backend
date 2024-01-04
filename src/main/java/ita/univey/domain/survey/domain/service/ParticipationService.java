@@ -35,7 +35,7 @@ public class ParticipationService {
 
     //답변 저장
     @Transactional
-    public void participateSurvey(String userEmail, Long surveyId, List<ParticipationAnswerDto> answerDtoList) {
+    public Integer participateSurvey(String userEmail, Long surveyId, List<ParticipationAnswerDto> answerDtoList) {
         User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
         Survey findSur = surveyRepository.findById(surveyId).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
 
@@ -52,8 +52,7 @@ public class ParticipationService {
                         .build();
                 participationRepository.save(participation);
 
-            }
-            else {
+            } else {
                 String content = participationAnswerDto.getContent();
                 Participation participation = Participation.builder()
                         .user(finduser)
@@ -78,6 +77,8 @@ public class ParticipationService {
         pointTransactionRepository.save(pointTransaction);
 
         findSur.setCurrentRespondents(findSur.getCurrentRespondents() + 1);
+        //survey 참여했을 때 user point를 갱신해 줘야함.
+        return finduser.getPoint();
     }
 
 }
