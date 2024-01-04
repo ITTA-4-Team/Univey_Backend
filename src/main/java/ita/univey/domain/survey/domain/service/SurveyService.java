@@ -57,7 +57,7 @@ public class SurveyService {
 
         String stringDeadline = surveyCreateDto.getDeadline();
         // 입력된 날짜 형식 지정
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yy");
 
         // LocalDate로 parse
         LocalDate deadline = LocalDate.parse(stringDeadline, formatter);
