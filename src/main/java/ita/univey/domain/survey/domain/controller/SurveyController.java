@@ -142,25 +142,23 @@ public class SurveyController {
     //답변 등록
     @Transactional
     @PostMapping("/answerSubmit/{surveyId}")
-    public BaseResponse<String> participateSurvey(
+    public BaseResponse<Integer> participateSurvey(
             Authentication authentication, @RequestBody ParticipationReqDto participationReqDto, @PathVariable("surveyId") Long surveyId) {
         String userEmail = authentication.getName();
 
         List<ParticipationAnswerDto> answerDtoList = participationReqDto.getAnswers();
-        participationService.participateSurvey(userEmail, surveyId, answerDtoList);
-
-        BaseResponse<String> response = BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS);
-
-        return new BaseResponse<>(response.getStatus(), response.getMessage());
+        Integer updatedPoint = participationService.participateSurvey(userEmail, surveyId, answerDtoList);
+        // 설문 참여 시 획득한 포인트 포함해서 다시 전달!
+        return BaseResponse.success(SuccessCode.CUSTOM_CREATED_SUCCESS, updatedPoint);
     }
 
     //리스트 조회
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public BaseResponse<Page<SurveyListDto>> getSurveyList(Authentication authentication,
-                                                           @RequestParam (value = "category", required = false, defaultValue = "all") String category,
-                                                           @RequestParam (value = "postType", required = false, defaultValue = "all") String postType,
-                                                           @RequestParam (value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                           PageReqDto pageReqDto){
+                                                           @RequestParam(value = "category", required = false, defaultValue = "all") String category,
+                                                           @RequestParam(value = "postType", required = false, defaultValue = "all") String postType,
+                                                           @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
+                                                           PageReqDto pageReqDto) {
 
         String userEmail = authentication.getName();
         Page<SurveyListDto> list = surveyService.getSurveyList(userEmail, category, postType, orderType, pageReqDto);
@@ -172,8 +170,8 @@ public class SurveyController {
 
     //검색 조회
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public BaseResponse<Page<SurveyListDto>> getSearchList(@RequestParam (value = "keyword") String keyword,
-                                                           @RequestParam (value = "orderType", required = false, defaultValue = "createdAt") String orderType,
+    public BaseResponse<Page<SurveyListDto>> getSearchList(@RequestParam(value = "keyword") String keyword,
+                                                           @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
                                                            PageReqDto pageReqDto) {
         Page<SurveyListDto> list = surveyService.getSearchList(keyword, orderType, pageReqDto);
         BaseResponse<Page<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
