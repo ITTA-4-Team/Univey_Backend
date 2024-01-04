@@ -21,4 +21,6 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     @Query("SELECT p.content FROM Participation p WHERE p.surveyQuestion = :surveyQuestion")
     List<String> findContentBySurveyQuestion(@Param("surveyQuestion") SurveyQuestion surveyQuestion);
+
+    boolean existsByUser(User user);
 }

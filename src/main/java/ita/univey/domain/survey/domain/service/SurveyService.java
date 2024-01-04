@@ -223,6 +223,11 @@ public class SurveyService {
         return dto;
     }
 
+    public boolean getDuplicationCheck(String userEmail) {
+        User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+        return participationRepository.existsByUser(finduser);
+    }
+
     private SurveyListDto mapToSurveyListDto(Survey survey) {
         SurveyListDto surveyListDto = new SurveyListDto();
         surveyListDto.setId(survey.getId());
