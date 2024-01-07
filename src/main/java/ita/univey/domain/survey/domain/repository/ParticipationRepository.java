@@ -1,6 +1,7 @@
 package ita.univey.domain.survey.domain.repository;
 
 import ita.univey.domain.survey.domain.Participation;
+import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.SurveyQuestion;
 import ita.univey.domain.survey.domain.SurveyQuestionAnswer;
 import ita.univey.domain.user.domain.User;
@@ -22,5 +23,5 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     @Query("SELECT p.content FROM Participation p WHERE p.surveyQuestion = :surveyQuestion")
     List<String> findContentBySurveyQuestion(@Param("surveyQuestion") SurveyQuestion surveyQuestion);
 
-    boolean existsByUser(User user);
+    boolean existsByUserAndSurvey(User user, Survey survey);
 }
