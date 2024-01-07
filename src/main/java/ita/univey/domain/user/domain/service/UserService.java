@@ -3,6 +3,7 @@ package ita.univey.domain.user.domain.service;
 import io.jsonwebtoken.Claims;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.UserRole;
+import ita.univey.domain.user.domain.dto.UserInfoDto;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
 import ita.univey.domain.user.domain.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -86,7 +88,21 @@ public class UserService {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("email로 user 찾기 실패"));
     }
 
+    @Transactional
     public Integer updatePointByUser(User user, Integer point) {
         return user.updatePoint(point);
     }
+
+    @Transactional
+    public Long updateUserInfoByEmail(String email, UserInfoDto userInfoDto) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
+        user.updateUserInfo(userInfoDto);
+        return user.getId();
+    }
+
+    public boolean checkNicknameDuplicate(String nickname, String email) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
+        return userRepository.existsByNickNameAndEmailNotContains(nickname, user.getEmail());
+    }
+
 }

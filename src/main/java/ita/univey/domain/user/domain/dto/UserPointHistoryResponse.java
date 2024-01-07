@@ -15,6 +15,8 @@ public class UserPointHistoryResponse {
     @NotEmpty
     private String topic;
 
+    private String sub;
+    
     @NotEmpty
     private String createdDay;
 

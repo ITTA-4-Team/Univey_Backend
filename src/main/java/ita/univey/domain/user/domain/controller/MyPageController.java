@@ -6,7 +6,7 @@ import ita.univey.domain.point.domain.PointType;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
-import ita.univey.domain.user.domain.dto.UserInfoResponse;
+import ita.univey.domain.user.domain.dto.UserInfoDto;
 import ita.univey.domain.user.domain.dto.UserLoginResponseDto;
 import ita.univey.domain.user.domain.dto.UserPointHistoryResponse;
 import ita.univey.domain.user.domain.dto.UserSurveyResponse;
@@ -46,11 +46,11 @@ public class MyPageController {
     }
 
     @GetMapping("/info")
-    public BaseResponse<UserInfoResponse> getUserInfo(Authentication authentication) {
+    public BaseResponse<UserInfoDto> getUserInfo(Authentication authentication) {
         String userEmail = authentication.getName();
         User userByEmail = userService.getUserByEmail(userEmail);
 
-        UserInfoResponse userInfo = UserInfoResponse.builder()
+        UserInfoDto userInfo = UserInfoDto.builder()
                 .name(userByEmail.getName())
                 .email(userByEmail.getEmail())
                 .build();
@@ -58,8 +58,25 @@ public class MyPageController {
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfo);
     }
 
+    @GetMapping("/info/{nickname}/exists")
+    public BaseResponse<Boolean> checkNicknameDuplicate(@PathVariable String nickname, Authentication authentication) {
+        String userEmail = authentication.getName();
+        boolean response = !userService.checkNicknameDuplicate(nickname, userEmail);
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, response);
+    }
+
+    @PatchMapping("/info")
+    public BaseResponse<SuccessCode> updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
+        String userEmail = authentication.getName();
+        Long id = userService.updateUserInfoByEmail(userEmail, userInfoDto);
+
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS);
+
+    }
+
     @GetMapping("/surveys")
     public BaseResponse<List<UserSurveyResponse>> getUserSurveys(@RequestParam String type, Authentication authentication) {
+
         String userEmail = authentication.getName();
         //User userByEmail = userService.getUserByEmail(userEmail);
 
@@ -79,11 +96,15 @@ public class MyPageController {
             String deadline = survey.getDeadline().format(formatter);
             UserSurveyResponse userSurveyResponse = UserSurveyResponse.builder()
                     .surveyId(survey.getId())
+                    .status(survey.getSurveyState())
+                    .age(survey.getAge())
                     .topic(survey.getTopic())
                     .description(survey.getDescription())
                     .deadline(survey.getDescription())
                     .category(survey.getCategory().getCategory())
                     .createdDay(createdDate)
+                    .currentRespondents(survey.getCurrentRespondents())
+                    .targetRespondents(survey.getTargetRespondents())
                     .deadline(deadline)
                     .point(survey.getPoint())
                     .build();
@@ -117,7 +138,7 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
-                        .pointType(PointType.POINT_PURCHASE)
+                        .pointType(pointTransaction.getPointType())
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
@@ -132,7 +153,8 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
-                        .pointType(PointType.POINT_USAGE)
+                        .sub("설문 생성")
+                        .pointType(pointTransaction.getPointType())
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
@@ -148,13 +170,37 @@ public class MyPageController {
                 UserPointHistoryResponse history = UserPointHistoryResponse.builder()
                         .createdDay(formattedCreatedDay)
                         .topic(pointTransaction.getSurvey().getTopic())
+                        .sub("설문 참여")
                         .pointType(PointType.POINT_GAIN)
                         .point(pointTransaction.getPointAmount())
                         .remainingPoint(pointTransaction.getRemainingPoints())
                         .build();
                 pointHistoryResponse.add(history);
             }
+        } else if (type.equals("all")) {
+            List<PointTransaction> userPointHistory = pointTransactionService
+                    .getUserTransactionsOrderedByTime(userByEmail);
 
+            for (PointTransaction pointTransaction : userPointHistory) {
+                String sub = null;
+                PointType transactionType = pointTransaction.getPointType();
+                if (transactionType == PointType.POINT_GAIN) {
+                    sub = "설문 참여";
+                } else if (transactionType == PointType.POINT_USAGE) {
+                    sub = "설문 생성";
+                }
+
+                String formattedCreatedDay = pointTransaction.getCreatedAt().format(formatter);
+                UserPointHistoryResponse history = UserPointHistoryResponse.builder()
+                        .createdDay(formattedCreatedDay)
+                        .topic(pointTransaction.getSurvey().getTopic())
+                        .sub(sub)
+                        .pointType(transactionType)
+                        .point(pointTransaction.getPointAmount())
+                        .remainingPoint(pointTransaction.getRemainingPoints())
+                        .build();
+                pointHistoryResponse.add(history);
+            }
         }
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, pointHistoryResponse);
     }
