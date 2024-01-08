@@ -21,6 +21,14 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     @Query("SELECT s.id FROM Survey s WHERE s.id NOT IN :participatedSurveyIds")
     List<Long> findIdsNotIn(@Param("participatedSurveyIds") List<Long> participatedSurveyIds);
 
+    Page<Survey> findAll(Pageable pageable);
+
+    Page<Survey> findAllBySurveyState(SurveyStatus surveyStatus, Pageable pageable);
+
+    Page<Survey> findAllByCategory(Category category, Pageable pageable);
+
+    Page<Survey> findAllByCategoryAndSurveyState(Category category, SurveyStatus surveyStatus, Pageable pageable);
+    
     Page<Survey> findAllByIdIn(@Param(value = "surveyIds") List<Long> surveyIds, Pageable pageable);
 
     @Query("SELECT s FROM Survey s WHERE s.category = :category AND s.id IN :surveyIds")

@@ -18,15 +18,19 @@ import ita.univey.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,54 +167,156 @@ public class SurveyService {
         survey.endSurvey();
     }
 
-    @Transactional
-    public Page<SurveyListDto> getSurveyList(String userEmail, String category, String postType, String orderType, PageReqDto pageReqDto) {
+    public Page<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, PageReqDto pageReqDto) {
         Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
-        User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
-        Long userId = finduser.getId();
-
         Category findCategory = null;
         SurveyStatus findStatus = null;
 
-        if (!category.equals("all")) {
-            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
-        }
-
-        if (!postType.equals("all") && !postType.equals("participated")) {
-            findStatus = SurveyStatus.getStatusByValue(postType);
-        }
-
-        List<Long> participatedSurveyIds = participationRepository.findSurveyIdsByUserId(userId); //설문 참여 했던 설문 아이디 리스트
-
-        if ("participated".equals(postType)) { //참여한 설문 대상
-            if ("all".equals(category)) {
-                return surveyRepository.findAllByIdIn(participatedSurveyIds, pageable)
-                        .map(this::mapToSurveyListDto);
-            } else {
-                return surveyRepository.findByCategoryAndIdIn(findCategory, participatedSurveyIds, pageable)
-                        .map(this::mapToSurveyListDto);
-            }
-        } else { //참여 안한 설문 대상
-            List<Long> excludedSurveyIds = surveyRepository.findIdsNotIn(participatedSurveyIds);
-            if ("all".equals(postType)) { //진행 중 + 완료
-                if ("all".equals(category)) {
-                    return surveyRepository.findAllByIdIn(excludedSurveyIds, pageable)
-                            .map(this::mapToSurveyListDto);
-                } else {
-                    return surveyRepository.findByCategoryAndIdIn(findCategory, excludedSurveyIds, pageable)
+        if (authentication == null) {// 로그인 안한 유저일 경우
+            log.info("로그인 안한 유저 목록보기");
+            if (category.equals("all")) { //카테고리 all일 경우
+                if (postType.equals("all")) {// postType all(참여 제외 => 진행중, 완료된 인데 로그인 안한 유저니까 모든 설문)일 경우
+                    return surveyRepository.findAll(pageable)
                             .map(this::mapToSurveyListDto);
                 }
-            } else { //진행 중 or 완료
-                if ("all".equals(category)) {
-                    return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
-                            .map(this::mapToSurveyListDto);
+                if (postType.equals("participated")) {// 카테고리 all + postType 참여 => null
+                    List<SurveyListDto> emptyList = Collections.emptyList();
+                    return new PageImpl<>(emptyList);
                 } else {
-                    return surveyRepository.findByIdAndSurveyStatusAndCategoryIn(excludedSurveyIds, findStatus, findCategory, pageable)
+                    findStatus = SurveyStatus.getStatusByValue(postType);// 카테고리 all + 나머지 postType(진행중 or 완료)
+                    return surveyRepository.findAllBySurveyState(findStatus, pageable)
+                            .map(this::mapToSurveyListDto);
+                }
+            } else { // 카테고리 all 아닐 경우
+                findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+                if (postType.equals("all")) {// postType all(로그인 안한 유저니까 카테고리만 설정하고 모두)일 경우
+                    return surveyRepository.findAllByCategory(findCategory, pageable)
+                            .map(this::mapToSurveyListDto);
+                }
+                if (postType.equals("participated")) {//  postType 참여 => null
+                    List<SurveyListDto> emptyList = Collections.emptyList();
+                    return new PageImpl<>(emptyList);
+                } else {
+                    findStatus = SurveyStatus.getStatusByValue(postType);// 나머지 postType(진행중 or 완료)
+                    return surveyRepository.findAllByCategoryAndSurveyState(findCategory, findStatus, pageable)
                             .map(this::mapToSurveyListDto);
                 }
             }
+        } else { // 로그인 한 유저일 경우
+            log.info("로그인한 유저 목록보기");
+
+            String userEmail = authentication.getName();
+            User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+            Long userId = finduser.getId();
+
+            List<Long> participatedSurveyIds = participationRepository.findSurveyIdsByUserId(userId); //참여한 설문
+            List<Long> excludedSurveyIds = surveyRepository.findIdsNotIn(participatedSurveyIds);// 참여하지 않은 설문
+
+            if (category.equals("all")) { //카테고리 all일 경우
+                if (postType.equals("all")) {// postType all일 경우
+                    // 유저가 참여한 설문 제외 모든 설문(진행중 + 완료) 가져오기
+                    if (excludedSurveyIds.isEmpty()) {
+                        return surveyRepository.findAll(pageable)
+                                .map(this::mapToSurveyListDto);
+                    } else {
+                        return surveyRepository.findAllByIdIn(excludedSurveyIds, pageable)
+                                .map(this::mapToSurveyListDto);
+                    }
+                }
+                if (postType.equals("participated")) {// 카테고리 all + postType 참여
+                    return surveyRepository.findAllByIdIn(participatedSurveyIds, pageable)
+                            .map(this::mapToSurveyListDto);
+
+                } else { // 카테고리 all + 나머지 postType(진행중 or 완료)
+
+                    findStatus = SurveyStatus.getStatusByValue(postType);
+                    if (excludedSurveyIds.isEmpty()) {
+                        return surveyRepository.findAllBySurveyState(findStatus, pageable)
+                                .map(this::mapToSurveyListDto);
+                    } else {
+                        return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
+                                .map(this::mapToSurveyListDto);
+                    }
+
+                }
+            } else { // 카테고리 all 아닐 경우
+                findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+                if (postType.equals("all")) {// 카테고리 + postType all일 경우 (참여한 설문 제외하고 카테고리 설정)
+                    if (excludedSurveyIds.isEmpty()) {
+                        return surveyRepository.findAllByCategory(findCategory, pageable)
+                                .map(this::mapToSurveyListDto);
+                    } else {
+                        return surveyRepository.findByCategoryAndIdIn(findCategory, excludedSurveyIds, pageable)
+                                .map(this::mapToSurveyListDto);
+                    }
+                }
+                if (postType.equals("participated")) {// 카테고리  + postType 참여
+                    return surveyRepository.findByCategoryAndIdIn(findCategory, participatedSurveyIds, pageable)
+                            .map(this::mapToSurveyListDto);
+                } else {
+                    //카테고리 + 상태
+                    findStatus = SurveyStatus.getStatusByValue(postType);//
+                    if (excludedSurveyIds.isEmpty()) {
+                        return surveyRepository.findAllByCategoryAndSurveyState(findCategory, findStatus, pageable)
+                                .map(this::mapToSurveyListDto);
+                    } else {
+                        return surveyRepository.findByIdAndSurveyStatusAndCategoryIn(excludedSurveyIds, findStatus, findCategory, pageable)
+                                .map(this::mapToSurveyListDto);
+                    }
+                }
+            }
         }
+
     }
+
+//    @Transactional
+//    public Page<SurveyListDto> getSurveyList(String userEmail, String category, String postType, String orderType, PageReqDto pageReqDto) {
+//        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+//        User finduser = userRepository.findUserByEmail(userEmail).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+//        Long userId = finduser.getId();
+//
+//        Category findCategory = null;
+//        SurveyStatus findStatus = null;
+//
+//        if (!category.equals("all")) {
+//            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+//        }
+//
+//        if (!postType.equals("all") && !postType.equals("participated")) {
+//            findStatus = SurveyStatus.getStatusByValue(postType);
+//        }
+//
+//        List<Long> participatedSurveyIds = participationRepository.findSurveyIdsByUserId(userId); //설문 참여 했던 설문 아이디 리스트
+//
+//        if ("participated".equals(postType)) { //참여한 설문 대상
+//            if ("all".equals(category)) {
+//                return surveyRepository.findAllByIdIn(participatedSurveyIds, pageable)
+//                        .map(this::mapToSurveyListDto);
+//            } else {
+//                return surveyRepository.findByCategoryAndIdIn(findCategory, participatedSurveyIds, pageable)
+//                        .map(this::mapToSurveyListDto);
+//            }
+//        } else { //참여 안한 설문 대상
+//            List<Long> excludedSurveyIds = surveyRepository.findIdsNotIn(participatedSurveyIds);
+//            if ("all".equals(postType)) { //진행 중 + 완료
+//                if ("all".equals(category)) {
+//                    return surveyRepository.findAllByIdIn(excludedSurveyIds, pageable)
+//                            .map(this::mapToSurveyListDto);
+//                } else {
+//                    return surveyRepository.findByCategoryAndIdIn(findCategory, excludedSurveyIds, pageable)
+//                            .map(this::mapToSurveyListDto);
+//                }
+//            } else { //진행 중 or 완료
+//                if ("all".equals(category)) {
+//                    return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
+//                            .map(this::mapToSurveyListDto);
+//                } else {
+//                    return surveyRepository.findByIdAndSurveyStatusAndCategoryIn(excludedSurveyIds, findStatus, findCategory, pageable)
+//                            .map(this::mapToSurveyListDto);
+//                }
+//            }
+//        }
+//    }
 
     @Transactional
     public Page<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
