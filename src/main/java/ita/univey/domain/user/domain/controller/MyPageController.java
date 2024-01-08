@@ -80,45 +80,18 @@ public class MyPageController {
         String userEmail = authentication.getName();
         //User userByEmail = userService.getUserByEmail(userEmail);
 
-        List<Survey> surveyList = new ArrayList<>();
-        List<UserSurveyResponse> response = new ArrayList<>();
-
-        if (type.equals("created")) {
-
-            surveyList = surveyService.getCreateSurveyByUserEmail(userEmail);
-
-        } else if (type.equals("participated")) {
-            surveyList = surveyService.getParticipatedSurveyByUserEmail(userEmail);
-        }
-        for (Survey survey : surveyList) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
-            String createdDate = survey.getCreatedAt().format(formatter);
-            String deadline = survey.getDeadline().format(formatter);
-            UserSurveyResponse userSurveyResponse = UserSurveyResponse.builder()
-                    .surveyId(survey.getId())
-                    .status(survey.getSurveyState())
-                    .age(survey.getAge())
-                    .topic(survey.getTopic())
-                    .description(survey.getDescription())
-                    .deadline(survey.getDescription())
-                    .category(survey.getCategory().getCategory())
-                    .createdDay(createdDate)
-                    .currentRespondents(survey.getCurrentRespondents())
-                    .targetRespondents(survey.getTargetRespondents())
-                    .deadline(deadline)
-                    .point(survey.getPoint())
-                    .build();
-            response.add(userSurveyResponse);
-
-        }
+        List<UserSurveyResponse> response = surveyService.getMyPageSurvey(userEmail, type);
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, response);
     }
 
     @GetMapping("/surveys/{surveyId}/close")
-    public BaseResponse<Object> terminateSurvey(@PathVariable Long surveyId) {
+    public BaseResponse<List<UserSurveyResponse>> terminateSurvey(@PathVariable Long surveyId, Authentication authentication) {
+        String userEmail = authentication.getName();
         Survey survey = surveyService.findSurvey(surveyId);
+
         surveyService.closeSurvey(survey);
-        return BaseResponse.success(SuccessCode.SURVEY_TERMINATED_SUCCESS);
+        List<UserSurveyResponse> response = surveyService.getMyPageSurvey(userEmail, "created");
+        return BaseResponse.success(SuccessCode.SURVEY_TERMINATED_SUCCESS, response);
     }
 
     @GetMapping("/point")

@@ -22,6 +22,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     List<Long> findIdsNotIn(@Param("participatedSurveyIds") List<Long> participatedSurveyIds);
 
     Page<Survey> findAllByIdIn(@Param(value = "surveyIds") List<Long> surveyIds, Pageable pageable);
+
     @Query("SELECT s FROM Survey s WHERE s.category = :category AND s.id IN :surveyIds")
     Page<Survey> findByCategoryAndIdIn(@Param(value = "category") Category category, @Param(value = "surveyIds") List<Long> surveyIds, Pageable pageable);
 
@@ -35,6 +36,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Page<Survey> findByTopicContaining(String keyword, Pageable pageable);
 
     List<Survey> findByTrendTrueAndCategory(Category category);
+
     List<Survey> findByTrendTrue();
 
     List<Survey> findBySurveyStateAndDeadlineBefore(SurveyStatus surveyState, LocalDate deadline);

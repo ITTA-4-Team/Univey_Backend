@@ -10,6 +10,7 @@ import ita.univey.domain.survey.domain.repository.ParticipationRepository;
 import ita.univey.domain.survey.domain.repository.SurveyRepository;
 import ita.univey.domain.survey.domain.repository.SurveyStatus;
 import ita.univey.domain.user.domain.User;
+import ita.univey.domain.user.domain.dto.UserSurveyResponse;
 import ita.univey.domain.user.domain.repository.UserRepository;
 import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.CustomLogicException;
@@ -120,6 +121,41 @@ public class SurveyService {
             surveyList.add(participation.getSurvey());
         }
         return surveyList;
+    }
+
+    public List<UserSurveyResponse> getMyPageSurvey(String userEmail, String type) {
+        List<Survey> surveyList = new ArrayList<>();
+        List<UserSurveyResponse> response = new ArrayList<>();
+
+        if (type.equals("created")) {
+
+            surveyList = getCreateSurveyByUserEmail(userEmail);
+
+        } else if (type.equals("participated")) {
+            surveyList = getParticipatedSurveyByUserEmail(userEmail);
+        }
+        for (Survey survey : surveyList) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+            String createdDate = survey.getCreatedAt().format(formatter);
+            String deadline = survey.getDeadline().format(formatter);
+            UserSurveyResponse userSurveyResponse = UserSurveyResponse.builder()
+                    .surveyId(survey.getId())
+                    .status(survey.getSurveyState())
+                    .age(survey.getAge())
+                    .topic(survey.getTopic())
+                    .description(survey.getDescription())
+                    .deadline(survey.getDescription())
+                    .category(survey.getCategory().getCategory())
+                    .createdDay(createdDate)
+                    .currentRespondents(survey.getCurrentRespondents())
+                    .targetRespondents(survey.getTargetRespondents())
+                    .deadline(deadline)
+                    .point(survey.getPoint())
+                    .build();
+            response.add(userSurveyResponse);
+
+        }
+        return response;
     }
 
     @Transactional
