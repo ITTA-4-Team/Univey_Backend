@@ -22,7 +22,7 @@ public class SurveyCreateDto {
     @NotEmpty
     private String category;
 
-    private int age;
+    private AgeDto age;
 
     @NotEmpty
     private String gender;
@@ -32,5 +32,6 @@ public class SurveyCreateDto {
 
     @Column(name = "target_respondents")
     private Integer targetRespondents;
+
 
 }

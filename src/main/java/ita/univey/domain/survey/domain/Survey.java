@@ -37,8 +37,12 @@ public class Survey extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "min_age")
+    private Integer minAge;
+
+    @Column(name = "max_age")
+    private Integer maxAge;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -68,21 +72,22 @@ public class Survey extends BaseEntity {
     @Column(name = "point")
     private Integer point;
 
-    @Column(name="trend")
+    @Column(name = "trend")
     private boolean trend;
 
-    @Column(name="time")
+    @Column(name = "time")
     private Integer time;
 
     @Builder
-    public Survey(User user, String topic, String description, Integer age, Gender gender,
+    public Survey(User user, String topic, String description, Integer minAge, Integer maxAge, Gender gender,
                   LocalDate deadline, Integer targetRespondents, Integer currentRespondents,
                   SurveyStatus surveyState, Category category, List<SurveyQuestion> surveyQuestions,
                   boolean trend, Integer time) {
         this.user = user;
         this.topic = topic;
         this.description = description;
-        this.age = age;
+        this.minAge = minAge;
+        this.maxAge = maxAge;
         this.gender = gender;
         this.deadline = deadline;
         this.targetRespondents = targetRespondents;
