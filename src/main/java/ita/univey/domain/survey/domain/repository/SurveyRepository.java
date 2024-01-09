@@ -28,7 +28,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Page<Survey> findAllByCategory(Category category, Pageable pageable);
 
     Page<Survey> findAllByCategoryAndSurveyState(Category category, SurveyStatus surveyStatus, Pageable pageable);
-    
+
     Page<Survey> findAllByIdIn(@Param(value = "surveyIds") List<Long> surveyIds, Pageable pageable);
 
     @Query("SELECT s FROM Survey s WHERE s.category = :category AND s.id IN :surveyIds")
@@ -46,6 +46,10 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     List<Survey> findByTrendTrueAndCategory(Category category);
 
     List<Survey> findByTrendTrue();
+
+    List<Survey> findTop3ByOrderByCurrentRespondentsDesc();
+
+    List<Survey> findTop3ByCategoryOrderByCurrentRespondentsDesc(Category category);
 
     List<Survey> findBySurveyStateAndDeadlineBefore(SurveyStatus surveyState, LocalDate deadline);
 

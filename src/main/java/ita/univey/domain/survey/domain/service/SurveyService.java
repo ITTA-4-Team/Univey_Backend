@@ -328,15 +328,14 @@ public class SurveyService {
 
     @Transactional
     public List<TrendListDto> getTrendList(String category) {
-        Category findCategory = null;
 
         if (!category.equals("all")) {
-            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
-            return surveyRepository.findByTrendTrueAndCategory(findCategory)
+            Category findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+            return surveyRepository.findTop3ByCategoryOrderByCurrentRespondentsDesc(findCategory)
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
         } else {
-            return surveyRepository.findByTrendTrue()
+            return surveyRepository.findTop3ByOrderByCurrentRespondentsDesc()
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
         }
