@@ -3,7 +3,6 @@ package ita.univey.domain.survey.domain.dto;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
@@ -15,7 +14,7 @@ public class SurveyListDto {
     private String description;
     private String category;
     private Integer time;
-    private Integer age;
+    private AgeDto age;
     private Integer currentRespondents;
     private Integer targetRespondents;
     private Integer point;

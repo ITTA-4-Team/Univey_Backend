@@ -13,7 +13,7 @@ public class TrendListDto {
     private String topic;
     private String description;
     private String category;
-    private Integer age;
+    private AgeDto age;
     private Integer currentRespondents;
     private Integer targetRespondents;
     private Integer point;

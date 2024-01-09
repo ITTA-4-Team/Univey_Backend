@@ -77,7 +77,8 @@ public class SurveyService {
                 .surveyState(SurveyStatus.IN_PROGRESS)
                 .topic(surveyCreateDto.getTopic())
                 .description(surveyCreateDto.getDescription())
-                .age(surveyCreateDto.getAge())
+                .minAge(surveyCreateDto.getAge().getMinAge())
+                .maxAge(surveyCreateDto.getAge().getMaxAge())
                 .gender(gender) //여성, 남성으로 dto 와야함
                 .deadline(deadline)
                 .targetRespondents(surveyCreateDto.getTargetRespondents())
@@ -145,7 +146,10 @@ public class SurveyService {
             UserSurveyResponse userSurveyResponse = UserSurveyResponse.builder()
                     .surveyId(survey.getId())
                     .status(survey.getSurveyState())
-                    .age(survey.getAge())
+                    .age(UserSurveyResponse.Age.builder()
+                            .minAge(survey.getMinAge())
+                            .maxAge(survey.getMaxAge())
+                            .build())
                     .topic(survey.getTopic())
                     .description(survey.getDescription())
                     .deadline(survey.getDescription())
@@ -377,7 +381,10 @@ public class SurveyService {
         surveyListDto.setDescription(survey.getDescription());
         surveyListDto.setCategory(survey.getCategory().getCategory());
         surveyListDto.setTime(survey.getTime());
-        surveyListDto.setAge(survey.getAge());
+        surveyListDto.setAge(AgeDto.builder()
+                .minAge(survey.getMinAge())
+                .maxAge(survey.getMaxAge())
+                .build());
         surveyListDto.setTargetRespondents(survey.getTargetRespondents());
         surveyListDto.setCurrentRespondents(survey.getCurrentRespondents());
         surveyListDto.setPoint(survey.getPoint());
@@ -393,7 +400,10 @@ public class SurveyService {
         trendListDto.setTopic(survey.getTopic());
         trendListDto.setDescription(survey.getDescription());
         trendListDto.setCategory(survey.getCategory().getCategory());
-        trendListDto.setAge(survey.getAge());
+        trendListDto.setAge(AgeDto.builder()
+                .maxAge(survey.getMaxAge())
+                .minAge(survey.getMinAge())
+                .build());
         trendListDto.setTargetRespondents(survey.getTargetRespondents());
         trendListDto.setCurrentRespondents(survey.getCurrentRespondents());
         trendListDto.setPoint(survey.getPoint());

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
@@ -26,7 +27,7 @@ public class UserSurveyResponse {
     @NotEmpty
     private String description;
 
-    private Integer age;
+    private Age age;
 
     @NotEmpty
     private String category;
@@ -42,4 +43,15 @@ public class UserSurveyResponse {
 
     @NotEmpty
     private Integer point;
+
+    @Getter
+    @Builder
+    public static class Age {
+
+        @Column(name = "min_Age")
+        Integer minAge;
+
+        @Column(name = "max_Age")
+        Integer maxAge;
+    }
 }
