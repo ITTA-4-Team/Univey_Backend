@@ -49,7 +49,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new CustomLogicException(ExceptionCode.INVALID_PAYMENT_AMOUNT);
         }*/
         payment.setUser(user);
-        System.out.println(payment);
         return paymentRepository.save(payment);
     }
 
@@ -57,7 +56,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentSuccessDto tossPaymentSuccess(String paymentKey, String orderId, Integer amount) {
         Payment payment = verifyPayment(orderId, amount); // 요청 가격 = 결제된 금액
-        System.out.println("hello" + payment);
         PaymentSuccessDto result = requestPaymentAccept(paymentKey, orderId, amount);
         payment.setPaymentKey(paymentKey); //추후 결제 취소, 결제 조회
         payment.setPaySuccessYN(true); //성공 여부
@@ -71,7 +69,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
         pointTransactionRepository.save(pointTransaction);
 
-        System.out.println(result);
         return result;
     }
 
@@ -80,7 +77,6 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentSuccessDto requestPaymentAccept(String paymentKey, String orderId, Integer amount) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
-        //JSONObject params = new JSONObject();
 
         Map<String, Object> params = new HashMap<>();
         params.put("orderId", orderId);
@@ -89,16 +85,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentSuccessDto result = null;
         try {
-            System.out.println(paymentKey);
-            System.out.println(params);
-            System.out.println(headers);
             result = restTemplate.postForObject(TossPaymentConfig.URL + "/confirm",
                     //요청 URL은 Config에 작성한 "http://api.tosspayments.com/v1/payments/" + paymentKey
                     new HttpEntity<>(params, headers),
                     PaymentSuccessDto.class);
             //restTemplate.postForObject() -> post 요청을 보내고 객체로 결과를 반환 받는다
         } catch (Exception e) {
-            e.printStackTrace();
             throw new CustomLogicException(ErrorCode.ALREADY_APPROVED);
         }
         return result;
