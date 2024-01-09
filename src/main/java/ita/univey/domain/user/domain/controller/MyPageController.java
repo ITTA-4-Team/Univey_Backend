@@ -53,15 +53,17 @@ public class MyPageController {
         UserInfoDto userInfo = UserInfoDto.builder()
                 .name(userByEmail.getName())
                 .email(userByEmail.getEmail())
+                .nickName(userByEmail.getNickName())
+                .phoneNumber(userByEmail.getPhoneNumber())
                 .build();
 
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfo);
     }
 
-    @GetMapping("/info/{nickname}/exists")
-    public BaseResponse<Boolean> checkNicknameDuplicate(@PathVariable String nickname, Authentication authentication) {
+    @GetMapping("/info/{nickName}/exists")
+    public BaseResponse<Boolean> checkNicknameDuplicate(@PathVariable String nickName, Authentication authentication) {
         String userEmail = authentication.getName();
-        boolean response = !userService.checkNicknameDuplicate(nickname, userEmail);
+        boolean response = !userService.checkNicknameDuplicate(nickName, userEmail);
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, response);
     }
 
