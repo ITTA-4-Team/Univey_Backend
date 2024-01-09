@@ -94,7 +94,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new CustomLogicException(ErrorCode.ALREADY_APPROVED);
         }
         return result;
-
     }
 
     //결제 요청된 금액과 실제 결제된 금액 같은지 검증하는 부분
