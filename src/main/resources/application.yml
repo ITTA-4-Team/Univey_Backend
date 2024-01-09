@@ -41,3 +41,10 @@ jwt:
 
 chatgpt:
   api-key: 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
+
+payment:
+  toss:
+    test_client_api_key: test_ck_kYG57Eba3G2Yl7ykpWLL8pWDOxmA
+    test_secrete_api_key: test_sk_6bJXmgo28ewOQKvjJegeVLAnGKWx
+    success_url: "http://localhost:7070/api/v1/payments/toss/success"
+    fail_url: "http://localhost:7070/api/v1/payments/toss/fail"
