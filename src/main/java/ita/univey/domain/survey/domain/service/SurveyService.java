@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -117,10 +114,10 @@ public class SurveyService {
         return surveyRepository.findAllByUser(user);
     }
 
-    public List<Survey> getParticipatedSurveyByUserEmail(String email) {
+    public Set<Survey> getParticipatedSurveyByUserEmail(String email) {
         User user = userService.getUserByEmail(email);
         List<Participation> allByUser = participationRepository.findAllByUser(user);
-        List<Survey> surveyList = new ArrayList<>();
+        Set<Survey> surveyList = new HashSet<>();
 
         for (Participation participation : allByUser) {
             surveyList.add(participation.getSurvey());
@@ -137,7 +134,7 @@ public class SurveyService {
             surveyList = getCreateSurveyByUserEmail(userEmail);
 
         } else if (type.equals("participated")) {
-            surveyList = getParticipatedSurveyByUserEmail(userEmail);
+            surveyList = new ArrayList<>(getParticipatedSurveyByUserEmail(userEmail));
         }
         for (Survey survey : surveyList) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
