@@ -44,4 +44,5 @@ testDatainit.java
 WebMvcConfig.java
 .env
 
+application.yml
 application-local.yml
