@@ -44,7 +44,7 @@ public class ChatGptController {
             @RequestBody QuestionReq questionReq) {
         try {
             ChatGptRes chatGptRes = chatGptService.ask(questionReq);
-            String content = chatGptRes.getChoices().get(0).getMessage().getContent();
+            String content = chatGptRes.getChoices().get(0).getMessage().getContent().substring(5);
 //            String content = (tmp.replaceAll("[\\[\\]{}\"]", ""));
             //log.info("gpt=>{}", chatGptRes.getChoices().get(0).getMessage().getContent());
             log.info("gpt2 =>{}", content);
