@@ -71,7 +71,8 @@ public class ChatGptService {
                 .content(
                         "Please generate 3 survey questions with 5 multiple choice answers each, related to the topic: '"
                                 + questionReq.getQuestion()
-                                + "' in Korean only.")
+                                + "한국말로만 보여줘 json 형태로 질문은 question에 담아서 answer는 answer배열에 담아서 출력해줘. answer에는 문장 부호를 포함하지않아 , 같은 ")
+
                 .build());
 
         ChatGptRes chatGptRes = this.getResponse(
