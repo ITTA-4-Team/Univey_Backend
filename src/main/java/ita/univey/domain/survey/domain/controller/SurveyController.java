@@ -19,7 +19,7 @@ import ita.univey.global.SuccessCode;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -159,14 +159,13 @@ public class SurveyController {
 
     //리스트 조회
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public BaseResponse<Page<SurveyListDto>> getSurveyList(Authentication authentication,
-                                                           @RequestParam(value = "category", required = false, defaultValue = "all") String category,
-                                                           @RequestParam(value = "postType", required = false, defaultValue = "all") String postType,
-                                                           @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                           PageReqDto pageReqDto) {
+    public BaseResponse<Slice<SurveyListDto>> getSurveyList(Authentication authentication,
+                                                            @RequestParam(value = "category", required = false, defaultValue = "all") String category,
+                                                            @RequestParam(value = "postType", required = false, defaultValue = "all") String postType,
+                                                            @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
+                                                            PageReqDto pageReqDto) {
 
-//        Page<SurveyListDto> list = surveyService.getSurveyList(userEmail, category, postType, orderType, pageReqDto);
-        Page<SurveyListDto> list = surveyService.getSurveyList2(authentication, category, postType, orderType, pageReqDto);
+        Slice<SurveyListDto> list = surveyService.getSurveyList2(authentication, category, postType, orderType, pageReqDto);
 
         // 참여한 설문은 status participated로 수정
         if (authentication != null && postType.equals("participated")) {
@@ -175,18 +174,18 @@ public class SurveyController {
             }
         }
 
-        BaseResponse<Page<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
+        BaseResponse<Slice<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
         log.info("=====>{},{},{}", category, postType, orderType);
         return new BaseResponse<>(response.getStatus(), response.getMessage(), list);
     }
 
     //검색 조회
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public BaseResponse<Page<SurveyListDto>> getSearchList(@RequestParam(value = "keyword") String keyword,
+    public BaseResponse<Slice<SurveyListDto>> getSearchList(@RequestParam(value = "keyword") String keyword,
                                                            @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
                                                            PageReqDto pageReqDto) {
-        Page<SurveyListDto> list = surveyService.getSearchList(keyword, orderType, pageReqDto);
-        BaseResponse<Page<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
+        Slice<SurveyListDto> list = surveyService.getSearchList(keyword, orderType, pageReqDto);
+        BaseResponse<Slice<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
 
         return new BaseResponse<>(response.getStatus(), response.getMessage(), list);
     }

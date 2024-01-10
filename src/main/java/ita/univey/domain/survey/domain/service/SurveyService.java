@@ -17,10 +17,7 @@ import ita.univey.global.CustomLogicException;
 import ita.univey.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -168,7 +165,7 @@ public class SurveyService {
         survey.endSurvey();
     }
 
-    public Page<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, PageReqDto pageReqDto) {
+    public Slice<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, PageReqDto pageReqDto) {
         Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
         Category findCategory = null;
         SurveyStatus findStatus = null;
@@ -177,7 +174,7 @@ public class SurveyService {
             log.info("로그인 안한 유저 목록보기");
             if (category.equals("all")) { //카테고리 all일 경우
                 if (postType.equals("all")) {// postType all(참여 제외 => 진행중, 완료된 인데 로그인 안한 유저니까 모든 설문)일 경우
-                    return surveyRepository.findAll(pageable)
+                    return surveyRepository.findSliceBy(pageable)
                             .map(this::mapToSurveyListDto);
                 }
                 if (postType.equals("participated")) {// 카테고리 all + postType 참여 => null
@@ -320,7 +317,7 @@ public class SurveyService {
 //    }
 
     @Transactional
-    public Page<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
+    public Slice<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
         Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
         return surveyRepository.findByTopicContaining(keyword, pageable)
                 .map(this::mapToSurveyListDto);
