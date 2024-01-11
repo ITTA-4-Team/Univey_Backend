@@ -11,19 +11,15 @@ import org.springframework.data.domain.Sort;
 @AllArgsConstructor
 @Data
 public class PageReqDto {
-    private int page; //페이지 번호
-    private int size; //페이지 사이즈
-    private String type;
-    private String keyword;
+    private int pageNumber; //페이지 번호
+    private int pageSize; //페이지 사이즈
 
     public PageReqDto() {
-        this.page = 1;
-        this.size = 10;
+        this.pageNumber = 1;
+        this.pageSize = 5;
     }
 
     public Pageable getPageable(Sort sort) {
-        return PageRequest.of(page - 1, size, sort);
+        return PageRequest.of(pageNumber - 1, pageSize, sort);
     }
-
-    //public Pageable getPageable() { return PageRequest.of(page - 1, size); }
 }

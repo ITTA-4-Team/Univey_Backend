@@ -39,9 +39,10 @@ out/
 
 
 
-JwtTestController.java
 testDatainit.java
-WebMvcConfig.java
+
 .env
 
+application.yml
 application-local.yml
+UniveyApplicationTests.java

@@ -68,10 +68,13 @@ public class ChatGptService {
 
         messages.add(ChatGptMessage.builder()
                 .role(ChatGptConfig.ROLE)
-                .content(
-                        "Please generate 3 survey questions with 5 multiple choice answers each, related to the topic: '"
-                                + questionReq.getQuestion()
-                                + "' in Korean only.")
+//                .content(
+//                        "Please generate 3 survey questions with 5 multiple choice answers each, related to the topic: '"
+//                                + questionReq.getQuestion()
+//                                + "한국말로만 보여줘 json 형태로 질문은 question에 담아서 answer는 answer배열에 담아서 출력해줘. answer에는 문장 부호를 포함하지않아 , 같은 ")
+                .content("[[1, 개발 프로젝트에서 가장 선호하는 언어는 무엇인가요?, 자바, 파이썬, 자바스크립트, C++, 기타],[2, 개발 프로젝트에서 가장 자주 사용하는 개발 도구는 무엇인가요?, 이클립스, 비주얼 스튜디오 코드, 파이참, 인텔리J IDEA, 기타],[3, 개발 프로젝트에서 가장 중요하게 생각하는 요소는 무엇인가요?, 코드의 가독성, 성능 최적화, 보안, 사용자 경험, 기타]]\n" +
+                        "이 형태를 예시로" + questionReq.getQuestion() + "에 대한 설문조사에 필요한 객관식 3개. 3개는 각각 5개의 보기를 갖게 알려줘.위에 알려준 형태를 예시로 저 형태로 보내줘")
+
                 .build());
 
         ChatGptRes chatGptRes = this.getResponse(

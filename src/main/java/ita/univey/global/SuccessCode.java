@@ -12,7 +12,7 @@ import static org.springframework.http.HttpStatus.OK;
 public enum SuccessCode {
     // api 만들고 수정하기
 
-    CUSTOM_SUCCESS(OK, "~ 조회에 성공했습니다."),
+    CUSTOM_SUCCESS(OK, "~~ 조회에 성공했습니다."),
     CUSTOM_CREATED_SUCCESS(CREATED, "~ 생성에 성공했습니다."),
     CUSTOM_QUESTION_SUCCESS(OK, "ChatGPT 요청에 성공했습니다."),
     SURVEY_TERMINATED_SUCCESS(OK, "Survey 종료에 성공했습니다"),

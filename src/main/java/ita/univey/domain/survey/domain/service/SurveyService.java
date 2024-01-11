@@ -17,10 +17,7 @@ import ita.univey.global.CustomLogicException;
 import ita.univey.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -28,10 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -114,13 +108,13 @@ public class SurveyService {
     public List<Survey> getCreateSurveyByUserEmail(String email) {
         User user = userService.getUserByEmail(email);
 
-        return surveyRepository.findAllByUser(user);
+        return surveyRepository.findAllByUserOrderByCreatedAtDesc(user);
     }
 
-    public List<Survey> getParticipatedSurveyByUserEmail(String email) {
+    public Set<Survey> getParticipatedSurveyByUserEmail(String email) {
         User user = userService.getUserByEmail(email);
-        List<Participation> allByUser = participationRepository.findAllByUser(user);
-        List<Survey> surveyList = new ArrayList<>();
+        List<Participation> allByUser = participationRepository.findAllByUserOrderByCreatedAtDesc(user);
+        Set<Survey> surveyList = new HashSet<>();
 
         for (Participation participation : allByUser) {
             surveyList.add(participation.getSurvey());
@@ -137,7 +131,7 @@ public class SurveyService {
             surveyList = getCreateSurveyByUserEmail(userEmail);
 
         } else if (type.equals("participated")) {
-            surveyList = getParticipatedSurveyByUserEmail(userEmail);
+            surveyList = new ArrayList<>(getParticipatedSurveyByUserEmail(userEmail));
         }
         for (Survey survey : surveyList) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
@@ -171,8 +165,8 @@ public class SurveyService {
         survey.endSurvey();
     }
 
-    public Page<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, PageReqDto pageReqDto) {
-        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+    public Slice<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, Pageable pageable) {
+
         Category findCategory = null;
         SurveyStatus findStatus = null;
 
@@ -180,12 +174,12 @@ public class SurveyService {
             log.info("로그인 안한 유저 목록보기");
             if (category.equals("all")) { //카테고리 all일 경우
                 if (postType.equals("all")) {// postType all(참여 제외 => 진행중, 완료된 인데 로그인 안한 유저니까 모든 설문)일 경우
-                    return surveyRepository.findAll(pageable)
+                    return surveyRepository.findSliceBy(pageable)
                             .map(this::mapToSurveyListDto);
                 }
                 if (postType.equals("participated")) {// 카테고리 all + postType 참여 => null
                     List<SurveyListDto> emptyList = Collections.emptyList();
-                    return new PageImpl<>(emptyList);
+                    return new SliceImpl<>(emptyList);
                 } else {
                     findStatus = SurveyStatus.getStatusByValue(postType);// 카테고리 all + 나머지 postType(진행중 or 완료)
                     return surveyRepository.findAllBySurveyState(findStatus, pageable)
@@ -199,7 +193,7 @@ public class SurveyService {
                 }
                 if (postType.equals("participated")) {//  postType 참여 => null
                     List<SurveyListDto> emptyList = Collections.emptyList();
-                    return new PageImpl<>(emptyList);
+                    return new SliceImpl<>(emptyList);
                 } else {
                     findStatus = SurveyStatus.getStatusByValue(postType);// 나머지 postType(진행중 or 완료)
                     return surveyRepository.findAllByCategoryAndSurveyState(findCategory, findStatus, pageable)
@@ -232,7 +226,6 @@ public class SurveyService {
                             .map(this::mapToSurveyListDto);
 
                 } else { // 카테고리 all + 나머지 postType(진행중 or 완료)
-
                     findStatus = SurveyStatus.getStatusByValue(postType);
                     if (excludedSurveyIds.isEmpty()) {
                         return surveyRepository.findAllBySurveyState(findStatus, pageable)
@@ -241,7 +234,6 @@ public class SurveyService {
                         return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
                                 .map(this::mapToSurveyListDto);
                     }
-
                 }
             } else { // 카테고리 all 아닐 경우
                 findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
@@ -270,7 +262,6 @@ public class SurveyService {
                 }
             }
         }
-
     }
 
 //    @Transactional
@@ -323,23 +314,21 @@ public class SurveyService {
 //    }
 
     @Transactional
-    public Page<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
-        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+    public Slice<SurveyListDto> getSearchList(String keyword, String orderType, Pageable pageable) {
         return surveyRepository.findByTopicContaining(keyword, pageable)
                 .map(this::mapToSurveyListDto);
     }
 
     @Transactional
     public List<TrendListDto> getTrendList(String category) {
-        Category findCategory = null;
 
         if (!category.equals("all")) {
-            findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
-            return surveyRepository.findByTrendTrueAndCategory(findCategory)
+            Category findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
+            return surveyRepository.findTop3ByCategoryOrderByCurrentRespondentsDesc(findCategory)
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
         } else {
-            return surveyRepository.findByTrendTrue()
+            return surveyRepository.findTop3ByOrderByCurrentRespondentsDesc()
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
         }
