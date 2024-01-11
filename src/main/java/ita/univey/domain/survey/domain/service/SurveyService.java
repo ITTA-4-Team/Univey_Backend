@@ -165,8 +165,8 @@ public class SurveyService {
         survey.endSurvey();
     }
 
-    public Slice<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, PageReqDto pageReqDto) {
-        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+    public Slice<SurveyListDto> getSurveyList2(Authentication authentication, String category, String postType, String orderType, Pageable pageable) {
+
         Category findCategory = null;
         SurveyStatus findStatus = null;
 
@@ -179,7 +179,7 @@ public class SurveyService {
                 }
                 if (postType.equals("participated")) {// 카테고리 all + postType 참여 => null
                     List<SurveyListDto> emptyList = Collections.emptyList();
-                    return new PageImpl<>(emptyList);
+                    return new SliceImpl<>(emptyList);
                 } else {
                     findStatus = SurveyStatus.getStatusByValue(postType);// 카테고리 all + 나머지 postType(진행중 or 완료)
                     return surveyRepository.findAllBySurveyState(findStatus, pageable)
@@ -193,7 +193,7 @@ public class SurveyService {
                 }
                 if (postType.equals("participated")) {//  postType 참여 => null
                     List<SurveyListDto> emptyList = Collections.emptyList();
-                    return new PageImpl<>(emptyList);
+                    return new SliceImpl<>(emptyList);
                 } else {
                     findStatus = SurveyStatus.getStatusByValue(postType);// 나머지 postType(진행중 or 완료)
                     return surveyRepository.findAllByCategoryAndSurveyState(findCategory, findStatus, pageable)
@@ -226,7 +226,6 @@ public class SurveyService {
                             .map(this::mapToSurveyListDto);
 
                 } else { // 카테고리 all + 나머지 postType(진행중 or 완료)
-
                     findStatus = SurveyStatus.getStatusByValue(postType);
                     if (excludedSurveyIds.isEmpty()) {
                         return surveyRepository.findAllBySurveyState(findStatus, pageable)
@@ -235,7 +234,6 @@ public class SurveyService {
                         return surveyRepository.findByIdAndSurveyStatusIn(excludedSurveyIds, findStatus, pageable)
                                 .map(this::mapToSurveyListDto);
                     }
-
                 }
             } else { // 카테고리 all 아닐 경우
                 findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
@@ -264,7 +262,6 @@ public class SurveyService {
                 }
             }
         }
-
     }
 
 //    @Transactional
@@ -317,8 +314,7 @@ public class SurveyService {
 //    }
 
     @Transactional
-    public Slice<SurveyListDto> getSearchList(String keyword, String orderType, PageReqDto pageReqDto) {
-        Pageable pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
+    public Slice<SurveyListDto> getSearchList(String keyword, String orderType, Pageable pageable) {
         return surveyRepository.findByTopicContaining(keyword, pageable)
                 .map(this::mapToSurveyListDto);
     }
