@@ -61,3 +61,14 @@ tasks.named('test') {
 jar {
     enabled = false
 }
+
+plugins {
+    id 'war' // 추가
+}
+
+apply plugin: 'war'  // 추가
+
+
+bootWar {
+    archiveBaseName = "springboot" // 추가g
+}
