@@ -50,10 +50,7 @@ public class JwtTestController {
 
 
     @GetMapping("/hello")
-    public String test2(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        String token = bearerToken.substring("Bearer ".length());
-
+    public String test2() {
         return "SUCESSSSSS~~~~~~~";
     }
 

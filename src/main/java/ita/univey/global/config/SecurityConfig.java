@@ -78,7 +78,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/sign-in"),
                                         new AntPathRequestMatcher("/sign-up"),
                                         new AntPathRequestMatcher("/users/kakao/callback"),
-                                        new AntPathRequestMatcher("hello"),
+                                        new AntPathRequestMatcher("/hello"),
                                         new AntPathRequestMatcher("/health"),
                                         new AntPathRequestMatcher("/surveys/list"),
                                         new AntPathRequestMatcher("/trends"),
