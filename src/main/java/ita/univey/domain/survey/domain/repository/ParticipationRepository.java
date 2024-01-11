@@ -14,6 +14,8 @@ import java.util.List;
 public interface ParticipationRepository extends JpaRepository<Participation, Long> {
     List<Participation> findAllByUser(User user);
 
+    List<Participation> findAllByUserOrderByCreatedAtDesc(User user);
+
     @Query("SELECT p.survey.id FROM Participation p WHERE p.user.id = :userId")
     List<Long> findSurveyIdsByUserId(@Param(value = "userId") Long userId);
 

@@ -62,11 +62,12 @@ public class ChatGptController {
         List<ChatGptResponse> responses = new ArrayList<>();
 
         String[] sections = input.split("],");
+        int qNum = 1;
         for (String section : sections) {
             String[] parts = section.replace("[[", "").replace("]]", "").split(",");
             String question = parts[1].trim();
             List<String> answers = Arrays.asList(Arrays.copyOfRange(parts, 2, parts.length));
-            responses.add(new ChatGptResponse(question, answers));
+            responses.add(new ChatGptResponse(qNum, "multipleChoice", false, question, answers));
         }
 
         return responses;

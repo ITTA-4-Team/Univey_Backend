@@ -108,12 +108,12 @@ public class SurveyService {
     public List<Survey> getCreateSurveyByUserEmail(String email) {
         User user = userService.getUserByEmail(email);
 
-        return surveyRepository.findAllByUser(user);
+        return surveyRepository.findAllByUserOrderByCreatedAtDesc(user);
     }
 
     public Set<Survey> getParticipatedSurveyByUserEmail(String email) {
         User user = userService.getUserByEmail(email);
-        List<Participation> allByUser = participationRepository.findAllByUser(user);
+        List<Participation> allByUser = participationRepository.findAllByUserOrderByCreatedAtDesc(user);
         Set<Survey> surveyList = new HashSet<>();
 
         for (Participation participation : allByUser) {

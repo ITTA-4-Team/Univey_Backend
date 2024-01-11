@@ -17,7 +17,8 @@ import java.util.Optional;
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Optional<Survey> findSurveyById(Long id);
 
-    List<Survey> findAllByUser(User user);
+    List<Survey> findAllByUserOrderByCreatedAtDesc(User user);
+
 
     @Query("SELECT s.id FROM Survey s WHERE s.id NOT IN :participatedSurveyIds")
     List<Long> findIdsNotIn(@Param("participatedSurveyIds") List<Long> participatedSurveyIds);
