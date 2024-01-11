@@ -48,13 +48,6 @@ public class JwtTestController {
         return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> test(Authentication authentication) {
-        String name = authentication.getName();
-        log.info("name=>{}", name);
-
-        return ResponseEntity.ok().body("SUCCESS!!!");
-    }
 
     @GetMapping("/hello")
     public String test2(HttpServletRequest request) {
