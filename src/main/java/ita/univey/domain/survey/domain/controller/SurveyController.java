@@ -159,19 +159,15 @@ public class SurveyController {
     }
 
     //리스트 조회
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}", method = RequestMethod.GET)
     public BaseResponse<Slice<SurveyListDto>> getSurveyList(Authentication authentication,
                                                             @RequestParam(value = "category", required = false, defaultValue = "all") String category,
                                                             @RequestParam(value = "postType", required = false, defaultValue = "all") String postType,
                                                             @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                            @RequestBody(required = false) PageReqDto pageReqDto) {
-        Pageable pageable;
-        if(pageReqDto == null) {
-            PageReqDto reqDto = new PageReqDto();
-            pageable = reqDto.getPageable(Sort.by(orderType).descending());
-        } else {
-            pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
-        }
+                                                            @PathVariable (value = "pageNumber") Integer pageNumber) {
+
+        PageReqDto reqDto = new PageReqDto(pageNumber, 10);
+        Pageable pageable = reqDto.getPageable(Sort.by(orderType).descending());
 
         Slice<SurveyListDto> list = surveyService.getSurveyList2(authentication, category, postType, orderType, pageable);
 
@@ -188,17 +184,13 @@ public class SurveyController {
     }
 
     //검색 조회
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search/{pageNumber}", method = RequestMethod.GET)
     public BaseResponse<Slice<SurveyListDto>> getSearchList(@RequestParam(value = "keyword") String keyword,
                                                            @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                           @RequestBody(required = false) PageReqDto pageReqDto) {
-        Pageable pageable;
-        if(pageReqDto == null) {
-            PageReqDto reqDto = new PageReqDto();
-            pageable = reqDto.getPageable(Sort.by(orderType).descending());
-        } else {
-            pageable = pageReqDto.getPageable(Sort.by(orderType).descending());
-        }
+                                                            @PathVariable (value = "pageNumber") Integer pageNumber) {
+
+        PageReqDto reqDto = new PageReqDto(pageNumber, 10);
+        Pageable pageable = reqDto.getPageable(Sort.by(orderType).descending());
 
         Slice<SurveyListDto> list = surveyService.getSearchList(keyword, orderType, pageable);
         BaseResponse<Slice<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
