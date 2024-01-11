@@ -6,21 +6,30 @@ import ita.univey.domain.point.domain.PointType;
 import ita.univey.domain.survey.domain.Survey;
 import ita.univey.domain.survey.domain.service.SurveyService;
 import ita.univey.domain.user.domain.User;
-import ita.univey.domain.user.domain.dto.UserInfoDto;
-import ita.univey.domain.user.domain.dto.UserLoginResponseDto;
-import ita.univey.domain.user.domain.dto.UserPointHistoryResponse;
-import ita.univey.domain.user.domain.dto.UserSurveyResponse;
+import ita.univey.domain.user.domain.UserImage;
+import ita.univey.domain.user.domain.dto.*;
+import ita.univey.domain.user.domain.repository.UserImageRepository;
+import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.domain.user.domain.service.UserImageService;
 import ita.univey.domain.user.domain.service.UserService;
 import ita.univey.global.BaseResponse;
+import ita.univey.global.CustomLogicException;
+import ita.univey.global.ErrorCode;
 import ita.univey.global.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -31,6 +40,9 @@ public class MyPageController {
     private final UserService userService;
     private final SurveyService surveyService;
     private final PointTransactionService pointTransactionService;
+    private final UserImageRepository userImageRepository;
+    private final UserImageService userImageService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public BaseResponse<UserLoginResponseDto> getMyPage(Authentication authentication) {
@@ -49,15 +61,15 @@ public class MyPageController {
     public BaseResponse<UserInfoDto> getUserInfo(Authentication authentication) {
         String userEmail = authentication.getName();
         User userByEmail = userService.getUserByEmail(userEmail);
+        UserInfoDto userInfoDto;
 
-        UserInfoDto userInfo = UserInfoDto.builder()
-                .name(userByEmail.getName())
-                .email(userByEmail.getEmail())
-                .nickName(userByEmail.getNickName())
-                .phoneNumber(userByEmail.getPhoneNumber())
-                .build();
-
-        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfo);
+        if (userByEmail.getUserImage() != null) {
+            ImageDto imageDto = userImageService.getImage(userByEmail);
+            userInfoDto = userService.getUserDetailWithImage(userByEmail, imageDto);
+        } else {
+            userInfoDto = userService.getUserDetail(userByEmail);
+        }
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfoDto);
     }
 
     @GetMapping("/info/{nickName}/exists")
@@ -68,10 +80,41 @@ public class MyPageController {
     }
 
     @PatchMapping("/info")
-    public BaseResponse<SuccessCode> updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
+    public BaseResponse<UserInfoDto> updateUserInfo(@RequestPart(required = false) MultipartFile file, @RequestBody UserInfoDto userInfoDto, Authentication authentication) {
         String userEmail = authentication.getName();
-        Long id = userService.updateUserInfoByEmail(userEmail, userInfoDto);
+        User user = userService.getUserByEmail(userEmail);
 
+        if (file == null) {
+            Long id = userService.updateUserInfoByEmail(userEmail, userInfoDto);
+            return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfoDto);
+        }
+
+        if(!file.getContentType().startsWith("image")){
+            return BaseResponse.error(ErrorCode.IMAGE_NOT_CORRECT);
+        }
+        String originName = file.getOriginalFilename();
+
+        String fileName = Paths.get(originName).getFileName().toString();
+
+        String uuid = UUID.randomUUID().toString();
+        String imageName = uuid + "_" + fileName;
+
+        String saveName = "/univey/img/" + File.separator + imageName;
+        Path savePath = Paths.get(saveName);
+
+        try {
+            file.transferTo(savePath);
+            ImageDto imageDto = new ImageDto(originName, imageName, saveName);
+            userInfoDto.setImageDto(imageDto);
+
+            UserImage userImage = new UserImage(originName, imageName, saveName);
+            UserImage saveuserImage = userImageRepository.save(userImage);
+            user.setUserImage(saveuserImage);
+
+            Long id = userService.updateUserInfoByEmail(user.getEmail(), userInfoDto, imageDto);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS);
 
     }

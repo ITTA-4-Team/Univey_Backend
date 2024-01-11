@@ -1,13 +1,11 @@
 package ita.univey.domain.user.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,5 +23,7 @@ public class UserInfoDto {
 
     //@NotEmpty
     public String phoneNumber;
+
+    public ImageDto imageDto;
 }
 
