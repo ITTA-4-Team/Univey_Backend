@@ -47,7 +47,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                //.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
                 .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
 
 
@@ -73,22 +73,22 @@ public class SecurityConfig {
                  */
 
                 .authorizeHttpRequests((registry) ->
-                        registry.requestMatchers(
-                                        new AntPathRequestMatcher("/login"),
-                                        new AntPathRequestMatcher("/sign-in"),
-                                        new AntPathRequestMatcher("/sign-up"),
-                                        new AntPathRequestMatcher("/users/kakao/callback"),
-                                        new AntPathRequestMatcher("/hello"),
-                                        new AntPathRequestMatcher("/health"),
-                                        new AntPathRequestMatcher("/surveys/list"),
-                                        new AntPathRequestMatcher("/trends"),
-                                        new AntPathRequestMatcher("/ngrok-test"))
-                                .permitAll()
-                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/admintest")).hasRole("ADMIN")
+                                registry.requestMatchers(
+                                                new AntPathRequestMatcher("/login"),
+                                                new AntPathRequestMatcher("/sign-in"),
+                                                new AntPathRequestMatcher("/sign-up"),
+                                                new AntPathRequestMatcher("/users/kakao/callback"),
+                                                new AntPathRequestMatcher("/hello"),
+                                                new AntPathRequestMatcher("/health"),
+                                                new AntPathRequestMatcher("/surveys/list"),
+                                                new AntPathRequestMatcher("/trends"),
+                                                new AntPathRequestMatcher("/ngrok-test"))
+                                        .permitAll()
+                                        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                                        .requestMatchers(new AntPathRequestMatcher("/admintest")).hasRole("ADMIN")
 
-                                .anyRequest().authenticated()
+                                        .anyRequest().authenticated()
 
                 )
 
