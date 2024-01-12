@@ -80,7 +80,7 @@ public class SecurityConfig {
                                                 new AntPathRequestMatcher("/users/kakao/callback"),
                                                 new AntPathRequestMatcher("/hello"),
                                                 new AntPathRequestMatcher("/health"),
-                                                new AntPathRequestMatcher("/surveys/list"),
+                                                new AntPathRequestMatcher("/surveys/list/**"),
                                                 new AntPathRequestMatcher("/trends"),
                                                 new AntPathRequestMatcher("/ngrok-test"))
                                         .permitAll()
