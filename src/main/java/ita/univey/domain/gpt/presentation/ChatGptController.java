@@ -68,6 +68,7 @@ public class ChatGptController {
             String question = parts[1].trim();
             List<String> answers = Arrays.asList(Arrays.copyOfRange(parts, 2, parts.length));
             responses.add(new ChatGptResponse(qNum, "multipleChoice", false, question, answers));
+            qNum++;
         }
 
         return responses;
