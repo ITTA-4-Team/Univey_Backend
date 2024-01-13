@@ -176,12 +176,12 @@ public class SurveyController {
 
         Slice<SurveyListDto> list = surveyService.getSurveyList2(authentication, category, postType, orderType, pageable);
 
-        // 참여한 설문은 status participated로 수정
-        if (authentication != null && postType.equals("participated")) {
-            for (SurveyListDto surveyListDto : list) {
-                surveyListDto.setStatus("participated");
-            }
-        }
+//        // 참여한 설문은 status participated로 수정
+//        if (authentication != null && postType.equals("participated")) {
+//            for (SurveyListDto surveyListDto : list) {
+//                surveyListDto.setStatus("participated");
+//            }
+//        }
 
         BaseResponse<Slice<SurveyListDto>> response = BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, list);
         log.info("=====>{},{},{}", category, postType, orderType);
