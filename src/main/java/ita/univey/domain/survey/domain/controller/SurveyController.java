@@ -46,6 +46,11 @@ public class SurveyController {
     private final PointTransactionService pointTransactionService;
     private final UserService userService;
 
+    @GetMapping("/create")
+    public BaseResponse<SuccessCode> loginCheck() {
+        return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<Long>> createSurvey(@Valid @RequestBody SurveyCreateDto surveyCreateDto, Authentication authentication) {
         String userEmail = authentication.getName();
@@ -111,7 +116,7 @@ public class SurveyController {
             surveyQuestionRepository.save(newSurveyQuestion);
 
         }
-        
+
         int surveyPoint = surveyService.updatePointById(surveyId, lenQuestion);
         Integer updatedUserPoint = userService.updatePointByUser(survey.getUser(), -surveyPoint);
         PointTransaction newPointTransaction = PointTransaction.builder()
@@ -164,7 +169,7 @@ public class SurveyController {
                                                             @RequestParam(value = "category", required = false, defaultValue = "all") String category,
                                                             @RequestParam(value = "postType", required = false, defaultValue = "all") String postType,
                                                             @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                            @PathVariable (value = "pageNumber") Integer pageNumber) {
+                                                            @PathVariable(value = "pageNumber") Integer pageNumber) {
 
         PageReqDto reqDto = new PageReqDto(pageNumber, 10);
         Pageable pageable = reqDto.getPageable(Sort.by(orderType).descending());
@@ -186,8 +191,8 @@ public class SurveyController {
     //검색 조회
     @RequestMapping(value = "/search/{pageNumber}", method = RequestMethod.GET)
     public BaseResponse<Slice<SurveyListDto>> getSearchList(@RequestParam(value = "keyword") String keyword,
-                                                           @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
-                                                            @PathVariable (value = "pageNumber") Integer pageNumber) {
+                                                            @RequestParam(value = "orderType", required = false, defaultValue = "createdAt") String orderType,
+                                                            @PathVariable(value = "pageNumber") Integer pageNumber) {
 
         PageReqDto reqDto = new PageReqDto(pageNumber, 10);
         Pageable pageable = reqDto.getPageable(Sort.by(orderType).descending());
