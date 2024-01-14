@@ -82,7 +82,8 @@ public class SecurityConfig {
                                                 new AntPathRequestMatcher("/health"),
                                                 new AntPathRequestMatcher("/surveys/list/**"),
                                                 new AntPathRequestMatcher("/trends"),
-                                                new AntPathRequestMatcher("/ngrok-test"))
+                                                new AntPathRequestMatcher("/ngrok-test"),
+                                                new AntPathRequestMatcher("/**"))
                                         .permitAll()
                                         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 //                                .requestMatchers(PathRequest.toH2Console()).permitAll()
