@@ -66,6 +66,9 @@ public class SurveyService {
         String stringCategory = surveyCreateDto.getCategory();
         Category category = categoryRepository.findCategoryByCategory(stringCategory)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+        if (surveyCreateDto.getTargetRespondents() == null) {
+            surveyCreateDto.setTargetRespondents(0);
+        }
         Survey newSurvey = Survey.builder()
                 .user(surveyCreateUser)
                 .surveyState(SurveyStatus.IN_PROGRESS)
