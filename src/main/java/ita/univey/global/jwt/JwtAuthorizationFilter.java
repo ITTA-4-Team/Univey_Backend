@@ -25,8 +25,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ServletException {
         String requestURI = request.getRequestURI();
-        log.info("요청 url in filter => {}", request.getRequestURI());
-
+        if (!requestURI.equals("/")) {
+            log.info("요청 url in filter => {}", request.getRequestURI());
+        }
         //request header에서 토큰 꺼내오기.
         String bearerToken = extractAccessToken(request).orElse(null);
 
