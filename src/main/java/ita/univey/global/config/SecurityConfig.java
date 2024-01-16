@@ -81,6 +81,7 @@ public class SecurityConfig {
                                                 new AntPathRequestMatcher("/hello"),
                                                 new AntPathRequestMatcher("/health"),
                                                 new AntPathRequestMatcher("/surveys/list/**"),
+                                                new AntPathRequestMatcher("/surveys/search/**"),
                                                 new AntPathRequestMatcher("/trends"),
                                                 new AntPathRequestMatcher("/ngrok-test"),
                                                 new AntPathRequestMatcher("/"))
