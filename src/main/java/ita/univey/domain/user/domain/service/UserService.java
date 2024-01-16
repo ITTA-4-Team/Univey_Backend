@@ -103,7 +103,7 @@ public class UserService {
         return user.getId();
     }
 
-   @Transactional
+    @Transactional
     public Long updateUserInfoByEmail(String email, UserInfoDto userInfoDto, ImageDto imageDto) {
         User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
         user.updateUserInfo(userInfoDto);
@@ -125,6 +125,7 @@ public class UserService {
                 .build();
         return userInfoDto;
     }
+
     public UserInfoDto getUserDetail(User user) {
         UserInfoDto userInfoDto = UserInfoDto.builder()
                 .name(user.getName())
@@ -134,6 +135,7 @@ public class UserService {
                 .build();
         return userInfoDto;
     }
+
     public boolean checkNicknameDuplicate(String nickname, String email) {
         User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
         return userRepository.existsByNickNameAndEmailNotContains(nickname, user.getEmail());
