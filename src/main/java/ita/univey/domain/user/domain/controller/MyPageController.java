@@ -89,7 +89,7 @@ public class MyPageController {
             return BaseResponse.success(SuccessCode.CUSTOM_SUCCESS, userInfoDto);
         }
 
-        if(!file.getContentType().startsWith("image")){
+        if (!file.getContentType().startsWith("image")) {
             return BaseResponse.error(ErrorCode.IMAGE_NOT_CORRECT);
         }
         String originName = file.getOriginalFilename();
@@ -99,7 +99,7 @@ public class MyPageController {
         String uuid = UUID.randomUUID().toString();
         String imageName = uuid + "_" + fileName;
 
-        String saveName = "/univey/img/" + File.separator + imageName;
+        String saveName = "/Users/te___ho/Desktop/" + File.separator + imageName;
         Path savePath = Paths.get(saveName);
 
         try {
