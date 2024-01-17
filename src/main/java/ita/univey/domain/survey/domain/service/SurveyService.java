@@ -401,6 +401,7 @@ public class SurveyService {
         trendListDto.setCurrentRespondents(survey.getCurrentRespondents());
         trendListDto.setPoint(survey.getPoint());
         trendListDto.setDead_line(survey.getDeadline());
+        trendListDto.setStatus(survey.getSurveyState().getValue());
         return trendListDto;
     }
 
