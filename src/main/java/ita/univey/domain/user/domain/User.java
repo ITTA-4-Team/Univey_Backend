@@ -60,6 +60,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Survey> surveyList;
 
+    @OneToOne
+    @JoinColumn(name = "image_id", nullable = true)
+    private UserImage userImage;
+
     @Builder
     public User(String email, String password, String name, Integer point, String providerId, Set<UserRole> roleSet) {
         this.email = email;

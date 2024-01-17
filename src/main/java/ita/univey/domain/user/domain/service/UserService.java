@@ -3,10 +3,13 @@ package ita.univey.domain.user.domain.service;
 import io.jsonwebtoken.Claims;
 import ita.univey.domain.user.domain.User;
 import ita.univey.domain.user.domain.UserRole;
+import ita.univey.domain.user.domain.dto.ImageDto;
 import ita.univey.domain.user.domain.dto.UserInfoDto;
 import ita.univey.domain.user.domain.dto.UserJoinDto;
 import ita.univey.domain.user.domain.dto.UserLoginDto;
 import ita.univey.domain.user.domain.repository.UserRepository;
+import ita.univey.global.CustomLogicException;
+import ita.univey.global.ErrorCode;
 import ita.univey.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +101,39 @@ public class UserService {
         User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
         user.updateUserInfo(userInfoDto);
         return user.getId();
+    }
+
+    @Transactional
+    public Long updateUserInfoByEmail(String email, UserInfoDto userInfoDto, ImageDto imageDto) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new RuntimeException("회원 조회 실패"));
+        user.updateUserInfo(userInfoDto);
+        log.info(userInfoDto.getImageDto().getOriginName());
+        user.getUserImage().setOriginImageName(userInfoDto.getImageDto().getOriginName());
+        user.getUserImage().setImageName(userInfoDto.getImageDto().getImageName());
+        user.getUserImage().setImagePath(userInfoDto.getImageDto().getPathName());
+
+        return user.getId();
+    }
+
+    public UserInfoDto getUserDetailWithImage(User user, ImageDto imageDto) {
+        UserInfoDto userInfoDto = UserInfoDto.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .nickName(user.getNickName())
+                .phoneNumber(user.getPhoneNumber())
+                .imageDto(imageDto)
+                .build();
+        return userInfoDto;
+    }
+
+    public UserInfoDto getUserDetail(User user) {
+        UserInfoDto userInfoDto = UserInfoDto.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .nickName(user.getNickName())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
+        return userInfoDto;
     }
 
     public boolean checkNicknameDuplicate(String nickname, String email) {
