@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -31,7 +32,7 @@ public class SurveyQuestionsCreateDto {
         @JsonProperty("question_type")
         private String questionType;
 
-        @NotEmpty
+        @NotNull
         private boolean isRequired;
 
         @NotEmpty
