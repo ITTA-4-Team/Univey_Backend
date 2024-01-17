@@ -40,7 +40,7 @@ out/
 
 
 # db엎을때만 ignore 풀어서 사용 -> 카테고리 등록되는 코드
-#testDatainit.java
+testDatainit.java
 
 .env
 
