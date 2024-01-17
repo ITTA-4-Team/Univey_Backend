@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipationAnswerDto {
-    @NotNull
+    
     private Long question_id;
 
     private Long answer_id;

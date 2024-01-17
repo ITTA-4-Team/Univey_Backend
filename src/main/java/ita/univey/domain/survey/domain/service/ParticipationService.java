@@ -40,27 +40,29 @@ public class ParticipationService {
         Survey findSur = surveyRepository.findById(surveyId).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
 
         answerDtoList.forEach(participationAnswerDto -> {
-            SurveyQuestion findQues = surveyQuestionRepository.findById(participationAnswerDto.getQuestion_id()).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+            if (participationAnswerDto.getAnswer_id() != null) {
+                SurveyQuestion findQues = surveyQuestionRepository.findById(participationAnswerDto.getQuestion_id()).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
 
-            if (findQues.getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
-                SurveyQuestionAnswer findAns = surveyQuestionAnswerRepository.findById(participationAnswerDto.getAnswer_id()).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
-                Participation participation = Participation.builder()
-                        .user(finduser)
-                        .survey(findSur)
-                        .surveyQuestion(findQues)
-                        .surveyQuestionAnswer(findAns)
-                        .build();
-                participationRepository.save(participation);
+                if (findQues.getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+                    SurveyQuestionAnswer findAns = surveyQuestionAnswerRepository.findById(participationAnswerDto.getAnswer_id()).orElseThrow(() -> new CustomLogicException(ErrorCode.REQUEST_VALIDATION_EXCEPTION));
+                    Participation participation = Participation.builder()
+                            .user(finduser)
+                            .survey(findSur)
+                            .surveyQuestion(findQues)
+                            .surveyQuestionAnswer(findAns)
+                            .build();
+                    participationRepository.save(participation);
 
-            } else {
-                String content = participationAnswerDto.getContent();
-                Participation participation = Participation.builder()
-                        .user(finduser)
-                        .survey(findSur)
-                        .surveyQuestion(findQues)
-                        .content(content)
-                        .build();
-                participationRepository.save(participation);
+                } else {
+                    String content = participationAnswerDto.getContent();
+                    Participation participation = Participation.builder()
+                            .user(finduser)
+                            .survey(findSur)
+                            .surveyQuestion(findQues)
+                            .content(content)
+                            .build();
+                    participationRepository.save(participation);
+                }
             }
         });
 
