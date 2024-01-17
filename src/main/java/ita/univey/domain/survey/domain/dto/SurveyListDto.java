@@ -18,6 +18,7 @@ public class SurveyListDto {
     private Integer currentRespondents;
     private Integer targetRespondents;
     private Integer point;
+    private int questionCount;
     private String status;
     private boolean trend;
     private LocalDate dead_line;

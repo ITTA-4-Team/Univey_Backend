@@ -377,6 +377,7 @@ public class SurveyService {
                 .minAge(survey.getMinAge())
                 .maxAge(survey.getMaxAge())
                 .build());
+        surveyListDto.setQuestionCount(survey.getSurveyQuestions().size());
         surveyListDto.setTargetRespondents(survey.getTargetRespondents());
         surveyListDto.setCurrentRespondents(survey.getCurrentRespondents());
         surveyListDto.setPoint(survey.getPoint());
