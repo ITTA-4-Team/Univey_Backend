@@ -94,7 +94,7 @@ public class SurveyController {
             } else {
                 questionType = QuestionType.SHORT_ANSWER;
             }
-            log.info("question Type =>{}", userQuestion.getQuestionType());
+            log.info("이거 왜안돼... =>{}", userQuestion.isRequired());
             SurveyQuestion newSurveyQuestion = SurveyQuestion.builder()
                     .survey(survey)
                     .questionNum(userQuestion.getQuestionNum())
