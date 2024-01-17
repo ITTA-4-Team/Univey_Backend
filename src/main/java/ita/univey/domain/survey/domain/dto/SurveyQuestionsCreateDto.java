@@ -33,7 +33,7 @@ public class SurveyQuestionsCreateDto {
         private String questionType;
 
         @NotNull
-        private boolean isRequired;
+        private Boolean isRequired;
 
         @NotEmpty
         private List<String> answer;
