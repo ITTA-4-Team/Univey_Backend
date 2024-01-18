@@ -58,6 +58,7 @@ public class UserService {
                 .email(userJoinDto.getEmail())
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .roleSet(roles)
+                .point(1000) //user test를 위한 자동 포인트 충전
                 .providerId(providerId) // 임의의 providerId 생성 , 카카오로그인 작성 시 카카오에서 받아온 값으로 변경.
                 .build();
 
