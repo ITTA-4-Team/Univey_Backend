@@ -343,14 +343,10 @@ public class SurveyService {
             for (TrendListDto trendListDto : trendList) {
                 trendListDto.setParticipated(false);
             }
-        } else {
+        } else { // 로그인 했다면 참여했는지 안했는지 여부로 설정
             String userEmail = authentication.getName();
             for (TrendListDto trendListDto : trendList) {
-                if (getDuplicationCheck(userEmail, trendListDto.getId())) {
-                    trendListDto.setParticipated(true);
-                } else {
-                    trendListDto.setParticipated(false);
-                }
+                trendListDto.setParticipated(getDuplicationCheck(userEmail, trendListDto.getId()));
             }
         }
 
