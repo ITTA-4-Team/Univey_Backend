@@ -18,5 +18,6 @@ public class TrendListDto {
     private Integer targetRespondents;
     private Integer point;
     private String status;
+    private Boolean participated;
     private LocalDate dead_line;
 }

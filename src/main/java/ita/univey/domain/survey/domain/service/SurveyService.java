@@ -323,18 +323,38 @@ public class SurveyService {
     }
 
     @Transactional
-    public List<TrendListDto> getTrendList(String category) {
+    public List<TrendListDto> getTrendList(Authentication authentication, String category) {
+        List<TrendListDto> trendList = new ArrayList<>();
 
         if (!category.equals("all")) {
             Category findCategory = categoryRepository.findByCategory(category); //카테고리 찾아서
-            return surveyRepository.findTop3ByCategoryOrderByCurrentRespondentsDesc(findCategory)
+            trendList = surveyRepository.findTop3ByCategoryOrderByCurrentRespondentsDesc(findCategory)
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
+
+
         } else {
-            return surveyRepository.findTop3ByOrderByCurrentRespondentsDesc()
+            trendList = surveyRepository.findTop3ByOrderByCurrentRespondentsDesc()
                     .stream().map(this::mapToTrendListDto)
                     .collect(Collectors.toList());
         }
+
+        if (authentication == null) {
+            for (TrendListDto trendListDto : trendList) {
+                trendListDto.setParticipated(false);
+            }
+        } else {
+            String userEmail = authentication.getName();
+            for (TrendListDto trendListDto : trendList) {
+                if (getDuplicationCheck(userEmail, trendListDto.getId())) {
+                    trendListDto.setParticipated(true);
+                } else {
+                    trendListDto.setParticipated(false);
+                }
+            }
+        }
+
+        return trendList;
     }
 
     @Transactional
